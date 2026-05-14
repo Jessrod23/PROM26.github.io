@@ -1,3 +1,7 @@
+<!-- ====================================== -->
+<!-- scanner.html COMPLETO -->
+<!-- ====================================== -->
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -14,24 +18,10 @@
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-
-<script src="firebase.js"></script>
-
 <!-- QR -->
 <script src="https://unpkg.com/html5-qrcode"></script>
 
 <style>
-
-body{
-
-    background:#0f0f0f;
-
-    color:white;
-
-    font-family:Arial;
-
-}
 
 #reader{
 
@@ -41,8 +31,6 @@ body{
 
     margin:auto;
 
-    margin-top:30px;
-
     background:white;
 
     padding:20px;
@@ -51,65 +39,47 @@ body{
 
 }
 
-#resultado{
+#resultadoScan{
 
     margin-top:30px;
 
     text-align:center;
 
-    font-size:30px;
+    font-size:35px;
 
     font-weight:bold;
 
 }
 
 .success{
+
     color:lime;
+
 }
 
 .error{
+
     color:red;
+
 }
 
 .info{
+
     color:#00bfff;
-}
-
-.nombre{
-
-    font-size:40px;
-
-    margin-top:10px;
-
-    color:#00ff88;
 
 }
 
-button{
+.estado-box{
 
-    width:100%;
+    background:#1a1a1a;
 
-    max-width:400px;
+    padding:20px;
 
-    padding:15px;
-
-    border:none;
-
-    border-radius:15px;
-
-    background:#00bfff;
-
-    color:white;
-
-    font-size:20px;
-
-    cursor:pointer;
-
-    margin:auto;
-
-    display:block;
+    border-radius:20px;
 
     margin-top:20px;
+
+    text-align:center;
 
 }
 
@@ -118,86 +88,102 @@ button{
 </head>
 <body>
 
-<h1 style="text-align:center;">
+<header>
 ESCÁNER PROM26
-</h1>
+</header>
 
-<button onclick="iniciarCamara()">
-INICIAR CÁMARA
-</button>
+<div class="container">
+
+<div class="card">
 
 <div id="reader"></div>
 
-<div id="resultado">
+<div class="estado-box">
+
+<div id="resultadoScan">
 
 ESCANEA UN QR
+
+</div>
+
+</div>
+
+</div>
 
 </div>
 
 <script>
 
 // ======================================
-// VARIABLES
+// FIREBASE
 // ======================================
 
-let scanner;
+const firebaseConfig = {
+
+  apiKey: "AIzaSyBtloFEBGr6Z2hFkT3zr02tgiu5IIyqBkE",
+
+  authDomain: "prom26-62dce.firebaseapp.com",
+
+  projectId: "prom26-62dce",
+
+  storageBucket: "prom26-62dce.firebasestorage.app",
+
+  messagingSenderId: "662057183440",
+
+  appId: "1:662057183440:web:96484f9031cbfb9b3596d5"
+
+};
+
+firebase.initializeApp(firebaseConfig);
+
+const db = firebase.firestore();
+
+// ======================================
+// VARIABLES
+// ======================================
 
 let escaneando = true;
 
 // ======================================
-// INICIAR CÁMARA
+// INICIAR SCANNER
 // ======================================
 
-async function iniciarCamara(){
+function iniciarScanner(){
 
-    try{
+    const html5QrCode = new Html5Qrcode("reader");
 
-        scanner = new Html5Qrcode("reader");
+    html5QrCode.start(
 
-        await scanner.start(
+        { facingMode: "environment" },
 
-            {
-                facingMode:"environment"
-            },
+        {
 
-            {
+            fps:10,
 
-                fps:10,
+            qrbox:250
 
-                qrbox:{
-                    width:250,
-                    height:250
-                }
+        },
 
-            },
+        async(decodedText)=>{
 
-            async(textoQR)=>{
-
-                if(!escaneando){
-                    return;
-                }
-
-                escaneando = false;
-
-                await verificarQR(textoQR);
-
-                setTimeout(()=>{
-
-                    escaneando = true;
-
-                },3000);
-
+            // EVITAR MULTIPLE ESCANEO
+            if(!escaneando){
+                return;
             }
 
-        );
+            escaneando = false;
 
-    }catch(error){
+            await verificarQR(decodedText);
 
-        console.log(error);
+            setTimeout(()=>{
 
-        alert("NO SE PUDO ABRIR LA CÁMARA ❌");
+                escaneando = true;
 
-    }
+            },2000);
+
+        }
+
+    );
 
 }
 
@@ -207,14 +193,14 @@ async function iniciarCamara(){
 
 async function verificarQR(id){
 
-    const resultado = document.getElementById("resultado");
+    const resultado = document.getElementById("resultadoScan");
 
     const docRef = db.collection("boletos").doc(id);
 
     const docSnap = await docRef.get();
 
     // ======================================
-    // INVALIDO
+    // QR INVALIDO
     // ======================================
 
     if(!docSnap.exists){
@@ -234,16 +220,8 @@ async function verificarQR(id){
 
     const data = docSnap.data();
 
-    let nombre = "SIN REGISTRAR";
-
-    if(data.nombre){
-
-        nombre = data.nombre;
-
-    }
-
     // ======================================
-    // CLONADO
+    // QR CLONADO
     // ======================================
 
     if(data.usado){
@@ -252,10 +230,6 @@ async function verificarQR(id){
 
         <div class="error">
         QR CLONADO ⚠️
-        </div>
-
-        <div class="nombre">
-        ${nombre}
         </div>
 
         <div class="info">
@@ -268,7 +242,7 @@ async function verificarQR(id){
 
 QR CLONADO ⚠️
 
-${nombre}
+${id}
 
         `);
 
@@ -276,7 +250,7 @@ ${nombre}
     }
 
     // ======================================
-    // ACTUALIZAR
+    // ACTUALIZAR FIREBASE
     // ======================================
 
     await docRef.update({
@@ -288,17 +262,13 @@ ${nombre}
     });
 
     // ======================================
-    // MOSTRAR
+    // MOSTRAR RESULTADO
     // ======================================
 
     resultado.innerHTML = `
 
     <div class="success">
     ACCESO PERMITIDO ✅
-    </div>
-
-    <div class="nombre">
-    ${nombre}
     </div>
 
     <div class="info">
@@ -311,14 +281,16 @@ ${nombre}
 
     `;
 
+    // ======================================
+    // ALERTA
+    // ======================================
+
     alert(`
 
 ACCESO PERMITIDO ✅
 
-NOMBRE:
 ${nombre}
 
-QR:
 ${id}
 
 TIPO:
@@ -327,6 +299,12 @@ ${data.tipo}
     `);
 
 }
+
+// ======================================
+// INICIAR
+// ======================================
+
+iniciarScanner();
 
 </script>
 
