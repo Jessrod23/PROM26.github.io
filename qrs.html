@@ -14,6 +14,8 @@
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+
 <style>
 
 .qr-grid{
@@ -90,6 +92,36 @@
     color:lime;
 }
 
+.nombre{
+
+    margin-top:10px;
+
+    color:#00bfff;
+
+    font-size:18px;
+
+    font-weight:bold;
+
+}
+
+.top-buttons{
+
+    display:flex;
+
+    gap:15px;
+
+    flex-wrap:wrap;
+
+    margin-top:20px;
+
+}
+
+.top-buttons button{
+
+    flex:1;
+
+}
+
 </style>
 
 </head>
@@ -109,6 +141,8 @@ QR GUARDADOS PROM26
 Aquí aparecen todos los QR guardados en Firebase.
 </p>
 
+<div class="top-buttons">
+
 <a href="index.html">
 
 <button>
@@ -116,6 +150,12 @@ VOLVER AL PANEL
 </button>
 
 </a>
+
+<button onclick="borrarTodo()" style="background:red;">
+BORRAR TODOS LOS QR
+</button>
+
+</div>
 
 </div>
 
@@ -161,6 +201,22 @@ async function cargarQR(){
 
     const snapshot = await db.collection("boletos").get();
 
+    // NO HAY QR
+
+    if(snapshot.empty){
+
+        lista.innerHTML = `
+
+        <h1 style="text-align:center;width:100%;">
+        NO HAY QR GENERADOS
+        </h1>
+
+        `;
+
+        return;
+
+    }
+
     snapshot.forEach((doc)=>{
 
         const data = doc.data();
@@ -183,6 +239,12 @@ async function cargarQR(){
             estadoClase = "usado";
         }
 
+        let nombre = "SIN REGISTRAR";
+
+        if(data.nombre){
+            nombre = data.nombre;
+        }
+
         lista.innerHTML += `
 
         <div class="qr-card ${clase}">
@@ -199,6 +261,10 @@ async function cargarQR(){
             ${data.tipo}
             </div>
 
+            <div class="nombre">
+            ${nombre}
+            </div>
+
             <div class="estado ${estadoClase}">
             ${estado}
             </div>
@@ -210,6 +276,63 @@ async function cargarQR(){
     });
 
 }
+
+// =====================================
+// BORRAR TODO
+// =====================================
+
+async function borrarTodo(){
+
+    const confirmar = confirm(
+        "¿SEGURO QUE QUIERES BORRAR TODOS LOS QR?"
+    );
+
+    if(!confirmar){
+
+        return;
+
+    }
+
+    try{
+
+        const snapshot = await db.collection("boletos").get();
+
+        if(snapshot.empty){
+
+            alert("NO HAY QR");
+
+            return;
+
+        }
+
+        for(const documento of snapshot.docs){
+
+            await db
+            .collection("boletos")
+            .doc(documento.id)
+            .delete();
+
+        }
+
+        document.getElementById("listaQR").innerHTML = "";
+
+        alert("TODOS LOS QR FUERON BORRADOS 🔥");
+
+        cargarQR();
+
+    }catch(error){
+
+        console.log(error);
+
+        alert("ERROR AL BORRAR ❌");
+
+    }
+
+}
+
+// =====================================
+// INICIAR
+// =====================================
 
 cargarQR();
 
