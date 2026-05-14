@@ -1,5 +1,5 @@
 <!-- ====================================== -->
-<!-- scanner.html COMPLETO -->
+<!-- scanner.html COMPLETO CORREGIDO -->
 <!-- ====================================== -->
 
 <!DOCTYPE html>
@@ -66,6 +66,16 @@
 .info{
 
     color:#00bfff;
+
+}
+
+.nombre{
+
+    color:#00ff88;
+
+    font-size:40px;
+
+    margin-top:15px;
 
 }
 
@@ -166,7 +176,6 @@ function iniciarScanner(){
 
         async(decodedText)=>{
 
-            // EVITAR MULTIPLE ESCANEO
             if(!escaneando){
                 return;
             }
@@ -221,6 +230,18 @@ async function verificarQR(id){
     const data = docSnap.data();
 
     // ======================================
+    // OBTENER NOMBRE
+    // ======================================
+
+    let nombre = "SIN REGISTRAR";
+
+    if(data.nombre){
+
+        nombre = data.nombre;
+
+    }
+
+    // ======================================
     // QR CLONADO
     // ======================================
 
@@ -232,8 +253,16 @@ async function verificarQR(id){
         QR CLONADO ⚠️
         </div>
 
+        <div class="nombre">
+        ${nombre}
+        </div>
+
         <div class="info">
         ${id}
+        </div>
+
+        <div>
+        ${data.tipo}
         </div>
 
         `;
@@ -242,7 +271,14 @@ async function verificarQR(id){
 
 QR CLONADO ⚠️
 
+NOMBRE:
+${nombre}
+
+QR:
 ${id}
+
+TIPO:
+${data.tipo}
 
         `);
 
@@ -271,6 +307,10 @@ ${id}
     ACCESO PERMITIDO ✅
     </div>
 
+    <div class="nombre">
+    ${nombre}
+    </div>
+
     <div class="info">
     ${id}
     </div>
@@ -289,8 +329,10 @@ ${id}
 
 ACCESO PERMITIDO ✅
 
+NOMBRE:
+${nombre}
 
-
+QR:
 ${id}
 
 TIPO:
