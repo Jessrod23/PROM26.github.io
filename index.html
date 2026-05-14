@@ -1,7 +1,3 @@
-<!-- ====================================== -->
-<!-- index.html COMPLETO -->
-<!-- ====================================== -->
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -14,11 +10,9 @@
 <link rel="stylesheet" href="style.css">
 
 <!-- FIREBASE -->
-
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-
 
 <!-- PDF -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -116,10 +110,10 @@ VER TODOS LOS QR
 <button onclick="descargarPDF()" class="pdfBtn">
 DESCARGAR PDF GENERAL
 </button>
-  <button onclick="borrarBoletos()" style="background:red;">
+
+<button onclick="borrarBoletos()" style="background:red;">
 BORRAR TODOS LOS BOLETOS
 </button>
-
 
 <a href="staff.html">
 
@@ -128,7 +122,8 @@ VER STAFF
 </button>
 
 </a>
-  <a href="registro.html">
+
+<a href="registro.html">
 
 <button style="background:orange;">
 REGISTRAR PERSONAS
@@ -289,77 +284,6 @@ async function generarBoletos(){
 
     }
 
-
-  // ======================================
-// BORRAR TODOS LOS BOLETOS
-// ======================================
-
-async function borrarBoletos(){
-
-    const confirmar = confirm(
-        "¿SEGURO QUE QUIERES BORRAR TODOS LOS BOLETOS?"
-    );
-
-    if(!confirmar){
-
-        return;
-
-    }
-
-    try{
-
-        const snapshot = await db.collection("boletos").get();
-
-        // NO HAY BOLETOS
-        if(snapshot.empty){
-
-            alert("NO HAY BOLETOS");
-
-            return;
-
-        }
-
-        // BORRAR TODOS
-        const promises = [];
-
-        snapshot.forEach((doc)=>{
-
-            promises.push(
-                db.collection("boletos")
-                .doc(doc.id)
-                .delete()
-            );
-
-        });
-
-        await Promise.all(promises);
-
-        // LIMPIAR PANTALLA
-        document.getElementById("resultado").innerHTML = "";
-
-        // RESETEAR STATS
-        document.getElementById("totalEntraron").innerText = "0";
-
-        document.getElementById("faltan").innerText = "400";
-
-        document.getElementById("vipEntraron").innerText = "0";
-
-        document.getElementById("staffEntraron").innerText = "0";
-
-        document.getElementById("generalEntraron").innerText = "0";
-
-        alert("TODOS LOS BOLETOS FUERON BORRADOS 🔥");
-
-    }catch(error){
-
-        console.log(error);
-
-        alert("ERROR AL BORRAR ❌");
-
-    }
-
-}
-
     // STAFF
 
     for(let i=1;i<=10;i++){
@@ -382,7 +306,7 @@ async function borrarBoletos(){
 
     // GENERAL
 
-    for(let i=1;i<=378;i++){
+    for(let i=1;i<=370;i++){
 
         const numero = String(i).padStart(4,'0');
 
@@ -401,6 +325,67 @@ async function borrarBoletos(){
     }
 
     alert("400 BOLETOS GENERADOS 🔥");
+
+}
+
+// ======================================
+// BORRAR TODOS LOS BOLETOS
+// ======================================
+
+async function borrarBoletos(){
+
+    const confirmar = confirm(
+        "¿SEGURO QUE QUIERES BORRAR TODOS LOS BOLETOS?"
+    );
+
+    if(!confirmar){
+
+        return;
+
+    }
+
+    try{
+
+        const snapshot = await db.collection("boletos").get();
+
+        if(snapshot.empty){
+
+            alert("NO HAY BOLETOS");
+
+            return;
+
+        }
+
+        for(const documento of snapshot.docs){
+
+            await db
+            .collection("boletos")
+            .doc(documento.id)
+            .delete();
+
+        }
+
+        document.getElementById("resultado").innerHTML = "";
+
+        document.getElementById("totalEntraron").innerText = "0";
+
+        document.getElementById("faltan").innerText = "400";
+
+        document.getElementById("vipEntraron").innerText = "0";
+
+        document.getElementById("staffEntraron").innerText = "0";
+
+        document.getElementById("generalEntraron").innerText = "0";
+
+        alert("TODOS LOS BOLETOS FUERON BORRADOS 🔥");
+
+    }catch(error){
+
+        console.log(error);
+
+        alert("ERROR AL BORRAR ❌");
+
+    }
 
 }
 
