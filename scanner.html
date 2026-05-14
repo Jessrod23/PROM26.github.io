@@ -1,196 +1,3 @@
-<!-- ====================================== -->
-<!-- scanner.html COMPLETO -->
-<!-- ====================================== -->
-
-<!DOCTYPE html>
-<html lang="es">
-<head>
-
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>ESCÁNER PROM26</title>
-
-<link rel="stylesheet" href="style.css">
-
-<!-- FIREBASE -->
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-
-<!-- QR -->
-<script src="https://unpkg.com/html5-qrcode"></script>
-
-<style>
-
-#reader{
-
-    width:100%;
-
-    max-width:500px;
-
-    margin:auto;
-
-    background:white;
-
-    padding:20px;
-
-    border-radius:20px;
-
-}
-
-#resultadoScan{
-
-    margin-top:30px;
-
-    text-align:center;
-
-    font-size:35px;
-
-    font-weight:bold;
-
-}
-
-.success{
-
-    color:lime;
-
-}
-
-.error{
-
-    color:red;
-
-}
-
-.info{
-
-    color:#00bfff;
-
-}
-
-.estado-box{
-
-    background:#1a1a1a;
-
-    padding:20px;
-
-    border-radius:20px;
-
-    margin-top:20px;
-
-    text-align:center;
-
-}
-
-</style>
-
-</head>
-<body>
-
-<header>
-ESCÁNER PROM26
-</header>
-
-<div class="container">
-
-<div class="card">
-
-<div id="reader"></div>
-
-<div class="estado-box">
-
-<div id="resultadoScan">
-
-ESCANEA UN QR
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-<script>
-
-// ======================================
-// FIREBASE
-// ======================================
-
-const firebaseConfig = {
-
-  apiKey: "AIzaSyBtloFEBGr6Z2hFkT3zr02tgiu5IIyqBkE",
-
-  authDomain: "prom26-62dce.firebaseapp.com",
-
-  projectId: "prom26-62dce",
-
-  storageBucket: "prom26-62dce.firebasestorage.app",
-
-  messagingSenderId: "662057183440",
-
-  appId: "1:662057183440:web:96484f9031cbfb9b3596d5"
-
-};
-
-firebase.initializeApp(firebaseConfig);
-
-const db = firebase.firestore();
-
-// ======================================
-// VARIABLES
-// ======================================
-
-let escaneando = true;
-
-// ======================================
-// INICIAR SCANNER
-// ======================================
-
-function iniciarScanner(){
-
-    const html5QrCode = new Html5Qrcode("reader");
-
-    html5QrCode.start(
-
-        { facingMode: "environment" },
-
-        {
-
-            fps:10,
-
-            qrbox:250
-
-        },
-
-        async(decodedText)=>{
-
-            // EVITAR MULTIPLE ESCANEO
-            if(!escaneando){
-                return;
-            }
-
-            escaneando = false;
-
-            await verificarQR(decodedText);
-
-            setTimeout(()=>{
-
-                escaneando = true;
-
-            },2000);
-
-        }
-
-    );
-
-}
-
-// ======================================
-// VERIFICAR QR
-// ======================================
-
 async function verificarQR(id){
 
     const resultado = document.getElementById("resultadoScan");
@@ -200,7 +7,7 @@ async function verificarQR(id){
     const docSnap = await docRef.get();
 
     // ======================================
-    // QR INVALIDO
+    // QR INVÁLIDO
     // ======================================
 
     if(!docSnap.exists){
@@ -221,6 +28,18 @@ async function verificarQR(id){
     const data = docSnap.data();
 
     // ======================================
+    // OBTENER NOMBRE
+    // ======================================
+
+    let nombre = "SIN REGISTRAR";
+
+    if(data.nombre){
+
+        nombre = data.nombre;
+
+    }
+
+    // ======================================
     // QR CLONADO
     // ======================================
 
@@ -233,6 +52,10 @@ async function verificarQR(id){
         </div>
 
         <div class="info">
+        ${nombre}
+        </div>
+
+        <div>
         ${id}
         </div>
 
@@ -242,6 +65,10 @@ async function verificarQR(id){
 
 QR CLONADO ⚠️
 
+NOMBRE:
+${nombre}
+
+QR:
 ${id}
 
         `);
@@ -250,7 +77,7 @@ ${id}
     }
 
     // ======================================
-    // ACTUALIZAR FIREBASE
+    // ACTUALIZAR
     // ======================================
 
     await docRef.update({
@@ -262,7 +89,7 @@ ${id}
     });
 
     // ======================================
-    // MOSTRAR RESULTADO
+    // MOSTRAR
     // ======================================
 
     resultado.innerHTML = `
@@ -272,6 +99,10 @@ ${id}
     </div>
 
     <div class="info">
+    ${nombre}
+    </div>
+
+    <div>
     ${id}
     </div>
 
@@ -289,6 +120,10 @@ ${id}
 
 ACCESO PERMITIDO ✅
 
+NOMBRE:
+${nombre}
+
+QR:
 ${id}
 
 TIPO:
@@ -297,14 +132,3 @@ ${data.tipo}
     `);
 
 }
-
-// ======================================
-// INICIAR
-// ======================================
-
-iniciarScanner();
-
-</script>
-
-</body>
-</html>
