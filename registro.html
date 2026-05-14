@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>REGISTRO PROM26</title>
+
+<link rel="stylesheet" href="style.css">
+
+<!-- FIREBASE -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+<!-- QR -->
+<script src="https://unpkg.com/html5-qrcode"></script>
+
+<style>
+
+#reader{
+
+    width:100%;
+
+    max-width:500px;
+
+    margin:auto;
+
+    background:white;
+
+    padding:20px;
+
+    border-radius:20px;
+
+}
+
+#resultado{
+
+    margin-top:30px;
+
+    text-align:center;
+
+    font-size:30px;
+
+    font-weight:bold;
+
+}
+
+.success{
+    color:lime;
+}
+
+.error{
+    color:red;
+}
+
+.info{
+    color:#00bfff;
+}
+
+</style>
+
+</head>
+<body>
+
+<header>
+REGISTRO PROM26
+</header>
+
+<div class="container">
+
+<div class="card">
+
+<h1>REGISTRAR PERSONAS</h1>
+
+<p>
+Escanea un QR y guarda el nombre del invitado.
+</p>
+
+<div id="reader"></div>
+
+<div id="resultado">
+
+ESCANEA UN QR
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+// ======================================
+// FIREBASE
+// ======================================
+
+const firebaseConfig = {
+
+  apiKey: "AIzaSyBtloFEBGr6Z2hFkT3zr02tgiu5IIyqBkE",
+
+  authDomain: "prom26-62dce.firebaseapp.com",
+
+  projectId: "prom26-62dce",
+
+  storageBucket: "prom26-62dce.firebasestorage.app",
+
+  messagingSenderId: "662057183440",
+
+  appId: "1:662057183440:web:96484f9031cbfb9b3596d5"
+
+};
+
+firebase.initializeApp(firebaseConfig);
+
+const db = firebase.firestore();
+
+// ======================================
+// VARIABLES
+// ======================================
+
+let escaneando = true;
+
+// ======================================
+// INICIAR SCANNER
+// ======================================
+
+function iniciarScanner(){
+
+    const html5QrCode = new Html5Qrcode("reader");
+
+    html5QrCode.start(
+
+        { facingMode: "environment" },
+
+        {
+
+            fps:10,
+
+            qrbox:250
+
+        },
+
+        async(decodedText)=>{
+
+            if(!escaneando){
+                return;
+            }
+
+            escaneando = false;
+
+            await registrarQR(decodedText);
+
+            setTimeout(()=>{
+
+                escaneando = true;
+
+            },3000);
+
+        }
+
+    );
+
+}
+
+// ======================================
+// REGISTRAR QR
+// ======================================
+
+async function registrarQR(id){
+
+    const resultado = document.getElementById("resultado");
+
+    const docRef = db.collection("boletos").doc(id);
+
+    const docSnap = await docRef.get();
+
+    // ======================================
+    // NO EXISTE
+    // ======================================
+
+    if(!docSnap.exists){
+
+        resultado.innerHTML = `
+
+        <div class="error">
+        QR INVÁLIDO ❌
+        </div>
+
+        `;
+
+        alert("QR INVÁLIDO ❌");
+
+        return;
+    }
+
+    const data = docSnap.data();
+
+    // ======================================
+    // YA REGISTRADO
+    // ======================================
+
+    if(data.nombre){
+
+        resultado.innerHTML = `
+
+        <div class="error">
+        YA REGISTRADO ⚠️
+        </div>
+
+        <div class="info">
+        ${data.nombre}
+        </div>
+
+        <div>
+        ${id}
+        </div>
+
+        `;
+
+        alert(`
+
+YA REGISTRADO ⚠️
+
+${data.nombre}
+
+        `);
+
+        return;
+    }
+
+    // ======================================
+    // PEDIR NOMBRE
+    // ======================================
+
+    const nombre = prompt("INGRESA EL NOMBRE:");
+
+    if(!nombre){
+
+        resultado.innerHTML = `
+
+        <div class="error">
+        REGISTRO CANCELADO ❌
+        </div>
+
+        `;
+
+        return;
+    }
+
+    // ======================================
+    // GUARDAR
+    // ======================================
+
+    await docRef.update({
+
+        nombre:nombre,
+
+        registrado:true,
+
+        fechaRegistro:new Date()
+
+    });
+
+    // ======================================
+    // MOSTRAR
+    // ======================================
+
+    resultado.innerHTML = `
+
+    <div class="success">
+    REGISTRO EXITOSO ✅
+    </div>
+
+    <div class="info">
+    ${nombre}
+    </div>
+
+    <div>
+    ${id}
+    </div>
+
+    `;
+
+    alert(`
+
+REGISTRO EXITOSO ✅
+
+NOMBRE:
+${nombre}
+
+QR:
+${id}
+
+    `);
+
+}
+
+// ======================================
+// INICIAR
+// ======================================
+
+iniciarScanner();
+
+</script>
+
+</body>
+</html>
