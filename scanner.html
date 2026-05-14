@@ -16,13 +16,22 @@
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 
-<!-- TU FIREBASE -->
 <script src="firebase.js"></script>
 
 <!-- QR -->
 <script src="https://unpkg.com/html5-qrcode"></script>
 
 <style>
+
+body{
+
+    background:#0f0f0f;
+
+    color:white;
+
+    font-family:Arial;
+
+}
 
 #reader{
 
@@ -32,6 +41,8 @@
 
     margin:auto;
 
+    margin-top:30px;
+
     background:white;
 
     padding:20px;
@@ -40,13 +51,13 @@
 
 }
 
-#resultadoScan{
+#resultado{
 
     margin-top:30px;
 
     text-align:center;
 
-    font-size:35px;
+    font-size:30px;
 
     font-weight:bold;
 
@@ -74,17 +85,31 @@
 
 }
 
-.estado-box{
+button{
 
-    background:#1a1a1a;
+    width:100%;
 
-    padding:20px;
+    max-width:400px;
 
-    border-radius:20px;
+    padding:15px;
+
+    border:none;
+
+    border-radius:15px;
+
+    background:#00bfff;
+
+    color:white;
+
+    font-size:20px;
+
+    cursor:pointer;
+
+    margin:auto;
+
+    display:block;
 
     margin-top:20px;
-
-    text-align:center;
 
 }
 
@@ -93,29 +118,19 @@
 </head>
 <body>
 
-<header>
+<h1 style="text-align:center;">
 ESCÁNER PROM26
-</header>
+</h1>
 
-<div class="container">
-
-<div class="card">
-
-<h1>CONTROL DE ACCESO</h1>
+<button onclick="iniciarCamara()">
+INICIAR CÁMARA
+</button>
 
 <div id="reader"></div>
 
-<div class="estado-box">
-
-<div id="resultadoScan">
+<div id="resultado">
 
 ESCANEA UN QR
-
-</div>
-
-</div>
-
-</div>
 
 </div>
 
@@ -125,77 +140,82 @@ ESCANEA UN QR
 // VARIABLES
 // ======================================
 
+let scanner;
+
 let escaneando = true;
-
-// ======================================
-// VERIFICAR LOGIN
-// ======================================
-
-firebase.auth().onAuthStateChanged((user)=>{
-
-    if(!user){
-
-        window.location.href = "login.html";
-
-    }
-
-});
 
 // ======================================
 // INICIAR CÁMARA
 // ======================================
 
-    const html5QrCode = new Html5Qrcode("reader");
+async function iniciarCamara(){
 
-    html5QrCode.start(
+    try{
 
-        { facingMode: "environment" },
+        scanner = new Html5Qrcode("reader");
 
-        {
+        await scanner.start(
 
-            fps:10,
+            {
+                facingMode:"environment"
+            },
 
-            qrbox:250
+            {
 
-        },
+                fps:10,
 
-        async(decodedText)=>{
+                qrbox:{
+                    width:250,
+                    height:250
+                }
 
-            if(!escaneando){
-                return;
+            },
+
+            async(textoQR)=>{
+
+                if(!escaneando){
+                    return;
+                }
+
+                escaneando = false;
+
+                await verificarQR(textoQR);
+
+                setTimeout(()=>{
+
+                    escaneando = true;
+
+                },3000);
+
             }
 
-            escaneando = false;
+        );
 
-            await registrarQR(decodedText);
+    }catch(error){
 
-            setTimeout(()=>{
+        console.log(error);
 
-                escaneando = true;
+        alert("NO SE PUDO ABRIR LA CÁMARA ❌");
 
-            },3000);
-
-        }
-
-    );
+    }
 
 }
 
-// ======================================
-// R
 // ======================================
 // VERIFICAR QR
 // ======================================
 
 async function verificarQR(id){
 
-    const resultado = document.getElementById("resultadoScan");
+    const resultado = document.getElementById("resultado");
 
     const docRef = db.collection("boletos").doc(id);
 
     const docSnap = await docRef.get();
 
-    // QR INVÁLIDO
+    // ======================================
+    // INVALIDO
+    // ======================================
 
     if(!docSnap.exists){
 
@@ -214,8 +234,6 @@ async function verificarQR(id){
 
     const data = docSnap.data();
 
-    // NOMBRE
-
     let nombre = "SIN REGISTRAR";
 
     if(data.nombre){
@@ -224,7 +242,9 @@ async function verificarQR(id){
 
     }
 
+    // ======================================
     // CLONADO
+    // ======================================
 
     if(data.usado){
 
@@ -242,28 +262,22 @@ async function verificarQR(id){
         ${id}
         </div>
 
-        <div>
-        ${data.tipo}
-        </div>
-
         `;
 
         alert(`
 
 QR CLONADO ⚠️
 
-NOMBRE:
 ${nombre}
-
-QR:
-${id}
 
         `);
 
         return;
     }
 
+    // ======================================
     // ACTUALIZAR
+    // ======================================
 
     await docRef.update({
 
@@ -273,7 +287,9 @@ ${id}
 
     });
 
+    // ======================================
     // MOSTRAR
+    // ======================================
 
     resultado.innerHTML = `
 
@@ -311,12 +327,6 @@ ${data.tipo}
     `);
 
 }
-
-// ======================================
-// INICIAR
-// ======================================
-
-iniciarScanner();
 
 </script>
 
