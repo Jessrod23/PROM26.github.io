@@ -145,62 +145,44 @@ firebase.auth().onAuthStateChanged((user)=>{
 // INICIAR CÁMARA
 // ======================================
 
-function iniciarScanner(){
-
     const html5QrCode = new Html5Qrcode("reader");
 
-    Html5Qrcode.getCameras()
+    html5QrCode.start(
 
-    .then(devices => {
+        { facingMode: "environment" },
 
-        if(devices && devices.length){
+        {
 
-            html5QrCode.start(
+            fps:10,
 
-                devices[0].id,
+            qrbox:250
 
-                {
+        },
 
-                    fps:10,
+        async(decodedText)=>{
 
-                    qrbox:250
+            if(!escaneando){
+                return;
+            }
 
-                },
+            escaneando = false;
 
-                async(decodedText)=>{
+            await registrarQR(decodedText);
 
-                    if(!escaneando){
-                        return;
-                    }
+            setTimeout(()=>{
 
-                    escaneando = false;
+                escaneando = true;
 
-                    await verificarQR(decodedText);
-
-                    setTimeout(()=>{
-
-                        escaneando = true;
-
-                    },2500);
-
-                }
-
-            );
+            },3000);
 
         }
 
-    })
-
-    .catch(err => {
-
-        alert("NO SE PUDO ABRIR LA CÁMARA ❌");
-
-        console.log(err);
-
-    });
+    );
 
 }
 
+// ======================================
+// R
 // ======================================
 // VERIFICAR QR
 // ======================================
