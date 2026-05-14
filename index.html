@@ -289,6 +289,77 @@ async function generarBoletos(){
 
     }
 
+
+  // ======================================
+// BORRAR TODOS LOS BOLETOS
+// ======================================
+
+async function borrarBoletos(){
+
+    const confirmar = confirm(
+        "¿SEGURO QUE QUIERES BORRAR TODOS LOS BOLETOS?"
+    );
+
+    if(!confirmar){
+
+        return;
+
+    }
+
+    try{
+
+        const snapshot = await db.collection("boletos").get();
+
+        // NO HAY BOLETOS
+        if(snapshot.empty){
+
+            alert("NO HAY BOLETOS");
+
+            return;
+
+        }
+
+        // BORRAR TODOS
+        const promises = [];
+
+        snapshot.forEach((doc)=>{
+
+            promises.push(
+                db.collection("boletos")
+                .doc(doc.id)
+                .delete()
+            );
+
+        });
+
+        await Promise.all(promises);
+
+        // LIMPIAR PANTALLA
+        document.getElementById("resultado").innerHTML = "";
+
+        // RESETEAR STATS
+        document.getElementById("totalEntraron").innerText = "0";
+
+        document.getElementById("faltan").innerText = "400";
+
+        document.getElementById("vipEntraron").innerText = "0";
+
+        document.getElementById("staffEntraron").innerText = "0";
+
+        document.getElementById("generalEntraron").innerText = "0";
+
+        alert("TODOS LOS BOLETOS FUERON BORRADOS 🔥");
+
+    }catch(error){
+
+        console.log(error);
+
+        alert("ERROR AL BORRAR ❌");
+
+    }
+
+}
+
     // STAFF
 
     for(let i=1;i<=10;i++){
