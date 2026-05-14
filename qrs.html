@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>QR GUARDADOS</title>
+
+<link rel="stylesheet" href="style.css">
+
+<!-- FIREBASE -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+<style>
+
+.qr-grid{
+
+    display:grid;
+
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+
+    gap:20px;
+
+    margin-top:30px;
+
+}
+
+.qr-card{
+
+    background:#1a1a1a;
+
+    padding:20px;
+
+    border-radius:20px;
+
+    text-align:center;
+
+}
+
+.qr-card img{
+
+    width:180px;
+
+    background:white;
+
+    padding:10px;
+
+    border-radius:15px;
+
+}
+
+.vip{
+    border:3px solid gold;
+}
+
+.staff{
+    border:3px solid #00bfff;
+}
+
+.general{
+    border:3px solid white;
+}
+
+.codigo{
+
+    margin-top:10px;
+
+    font-size:18px;
+
+    font-weight:bold;
+
+}
+
+.estado{
+
+    margin-top:10px;
+
+    font-size:18px;
+
+}
+
+.usado{
+    color:red;
+}
+
+.disponible{
+    color:lime;
+}
+
+</style>
+
+</head>
+<body>
+
+<header>
+QR GUARDADOS PROM26
+</header>
+
+<div class="container">
+
+<div class="card">
+
+<h1>TODOS LOS QR</h1>
+
+<p>
+Aquí aparecen todos los QR guardados en Firebase.
+</p>
+
+<a href="index.html">
+
+<button>
+VOLVER AL PANEL
+</button>
+
+</a>
+
+</div>
+
+<div class="qr-grid" id="listaQR"></div>
+
+</div>
+
+<script>
+
+// =====================================
+// FIREBASE
+// =====================================
+
+const firebaseConfig = {
+
+  apiKey: "AIzaSyBtloFEBGr6Z2hFkT3zr02tgiu5IIyqBkE",
+
+  authDomain: "prom26-62dce.firebaseapp.com",
+
+  projectId: "prom26-62dce",
+
+  storageBucket: "prom26-62dce.firebasestorage.app",
+
+  messagingSenderId: "662057183440",
+
+  appId: "1:662057183440:web:96484f9031cbfb9b3596d5"
+
+};
+
+firebase.initializeApp(firebaseConfig);
+
+const db = firebase.firestore();
+
+// =====================================
+// CARGAR QR
+// =====================================
+
+async function cargarQR(){
+
+    const lista = document.getElementById("listaQR");
+
+    lista.innerHTML = "";
+
+    const snapshot = await db.collection("boletos").get();
+
+    snapshot.forEach((doc)=>{
+
+        const data = doc.data();
+
+        let clase = "general";
+
+        if(data.tipo === "VIP"){
+            clase = "vip";
+        }
+
+        if(data.tipo === "STAFF"){
+            clase = "staff";
+        }
+
+        let estado = "DISPONIBLE ✅";
+        let estadoClase = "disponible";
+
+        if(data.usado){
+            estado = "USADO ❌";
+            estadoClase = "usado";
+        }
+
+        lista.innerHTML += `
+
+        <div class="qr-card ${clase}">
+
+            <h2>PROM26</h2>
+
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${data.id}">
+
+            <div class="codigo">
+            ${data.id}
+            </div>
+
+            <div>
+            ${data.tipo}
+            </div>
+
+            <div class="estado ${estadoClase}">
+            ${estado}
+            </div>
+
+        </div>
+
+        `;
+
+    });
+
+}
+
+cargarQR();
+
+</script>
+
+</body>
+</html>

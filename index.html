@@ -1,0 +1,507 @@
+<!-- ====================================== -->
+<!-- index.html COMPLETO -->
+<!-- ====================================== -->
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>PROM26 ADMIN</title>
+
+<link rel="stylesheet" href="style.css">
+
+<!-- FIREBASE -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+
+<!-- PDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+</head>
+<body>
+
+<header>
+PROM26 ADMIN
+</header>
+
+<div class="container">
+
+<!-- ====================================== -->
+<!-- BOTON CERRAR SESION -->
+<!-- ====================================== -->
+
+<div class="card">
+
+<button onclick="logout()" class="logoutBtn">
+CERRAR SESIÓN
+</button>
+
+</div>
+
+<!-- ====================================== -->
+<!-- STATS -->
+<!-- ====================================== -->
+
+<div class="card">
+
+<h1>MONITOREO EN VIVO</h1>
+
+<div class="stats-grid">
+
+<div class="stat-box">
+<h3>TOTAL ENTRARON</h3>
+<h1 id="totalEntraron">0</h1>
+</div>
+
+<div class="stat-box">
+<h3>FALTAN</h3>
+<h1 id="faltan">400</h1>
+</div>
+
+<div class="stat-box">
+<h3>VIP DENTRO</h3>
+<h1 id="vipEntraron">0</h1>
+</div>
+
+<div class="stat-box">
+<h3>STAFF DENTRO</h3>
+<h1 id="staffEntraron">0</h1>
+</div>
+
+<div class="stat-box">
+<h3>GENERAL DENTRO</h3>
+<h1 id="generalEntraron">0</h1>
+</div>
+
+</div>
+
+</div>
+
+<!-- ====================================== -->
+<!-- BOTONES -->
+<!-- ====================================== -->
+
+<div class="card">
+
+<h1>GENERAR BOLETOS</h1>
+
+<button onclick="generarBoletos()">
+GENERAR 400 BOLETOS
+</button>
+
+<a href="scanner.html">
+
+<button class="scannerBtn">
+ABRIR ESCÁNER
+</button>
+
+</a>
+
+<a href="qrs.html">
+
+<button class="qrBtn">
+VER TODOS LOS QR
+</button>
+
+</a>
+
+<button onclick="descargarPDF()" class="pdfBtn">
+DESCARGAR PDF GENERAL
+</button>
+
+
+<a href="staff.html">
+
+<button style="background:#00bfff;">
+VER STAFF
+</button>
+
+</a>
+
+</div>
+
+<!-- ====================================== -->
+<!-- RESULTADOS -->
+<!-- ====================================== -->
+
+<div id="resultado"></div>
+
+</div>
+
+<script>
+
+// ======================================
+// FIREBASE
+// ======================================
+
+const firebaseConfig = {
+
+  apiKey: "AIzaSyBtloFEBGr6Z2hFkT3zr02tgiu5IIyqBkE",
+
+  authDomain: "prom26-62dce.firebaseapp.com",
+
+  projectId: "prom26-62dce",
+
+  storageBucket: "prom26-62dce.firebasestorage.app",
+
+  messagingSenderId: "662057183440",
+
+  appId: "1:662057183440:web:96484f9031cbfb9b3596d5"
+
+};
+
+firebase.initializeApp(firebaseConfig);
+
+const db = firebase.firestore();
+
+// ======================================
+// PROTEGER PANEL
+// ======================================
+
+firebase.auth().onAuthStateChanged((user)=>{
+
+    if(!user){
+
+        window.location.href = "login.html";
+
+    }
+
+});
+
+// ======================================
+// LOGOUT
+// ======================================
+
+function logout(){
+
+    firebase.auth().signOut();
+
+    window.location.href = "login.html";
+
+}
+
+// ======================================
+// ACTUALIZAR STATS
+// ======================================
+
+actualizarStats();
+
+async function actualizarStats(){
+
+    const snapshot = await db.collection("boletos").get();
+
+    let totalEntraron = 0;
+    let vipEntraron = 0;
+    let staffEntraron = 0;
+    let generalEntraron = 0;
+
+    snapshot.forEach((doc)=>{
+
+        const data = doc.data();
+
+        if(data.usado){
+
+            totalEntraron++;
+
+            if(data.tipo === "VIP"){
+                vipEntraron++;
+            }
+
+            if(data.tipo === "STAFF"){
+                staffEntraron++;
+            }
+
+            if(data.tipo === "GENERAL"){
+                generalEntraron++;
+            }
+
+        }
+
+    });
+
+    document.getElementById("totalEntraron").innerText = totalEntraron;
+
+    document.getElementById("faltan").innerText = 400 - totalEntraron;
+
+    document.getElementById("vipEntraron").innerText = vipEntraron;
+
+    document.getElementById("staffEntraron").innerText = staffEntraron;
+
+    document.getElementById("generalEntraron").innerText = generalEntraron;
+
+}
+
+// ======================================
+// GENERAR BOLETOS
+// ======================================
+
+async function generarBoletos(){
+
+    const snapshot = await db.collection("boletos").get();
+
+    if(snapshot.size > 0){
+
+        alert("LOS BOLETOS YA EXISTEN");
+
+        return;
+
+    }
+
+    const resultado = document.getElementById("resultado");
+
+    resultado.innerHTML = "";
+
+    // VIP
+
+    for(let i=1;i<=20;i++){
+
+        const numero = String(i).padStart(3,'0');
+
+        const id = `VIP-${numero}`;
+
+        await db.collection("boletos").doc(id).set({
+
+            id:id,
+            tipo:"VIP",
+            usado:false
+
+        });
+
+        crearTarjeta(id,"VIP","vip");
+
+    }
+
+    // STAFF
+
+    for(let i=1;i<=10;i++){
+
+        const numero = String(i).padStart(3,'0');
+
+        const id = `STAFF-${numero}`;
+
+        await db.collection("boletos").doc(id).set({
+
+            id:id,
+            tipo:"STAFF",
+            usado:false
+
+        });
+
+        crearTarjeta(id,"STAFF","staff");
+
+    }
+
+    // GENERAL
+
+    for(let i=1;i<=378;i++){
+
+        const numero = String(i).padStart(4,'0');
+
+        const id = `PROM26-${numero}`;
+
+        await db.collection("boletos").doc(id).set({
+
+            id:id,
+            tipo:"GENERAL",
+            usado:false
+
+        });
+
+        crearTarjeta(id,"GENERAL","general");
+
+    }
+
+    alert("400 BOLETOS GENERADOS 🔥");
+
+}
+
+// ======================================
+// CREAR TARJETAS
+// ======================================
+
+function crearTarjeta(id,tipo,clase){
+
+    const resultado = document.getElementById("resultado");
+
+    resultado.innerHTML += `
+
+    <div class="ticket ${clase}">
+
+        <h2>PROM26</h2>
+
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${id}">
+
+        <div class="tipo">${tipo}</div>
+
+        <div class="codigo">${id}</div>
+
+    </div>
+
+    `;
+
+}
+
+// ======================================
+// PDF PULSERAS GENERAL
+// ======================================
+
+async function descargarPDF(){
+
+    const { jsPDF } = window.jspdf;
+
+    const pdf = new jsPDF('l', 'mm', 'a4');
+
+    const boletos = await db.collection("boletos").get();
+
+    let x = 10;
+    let y = 10;
+
+    let contador = 0;
+
+    for(const documento of boletos.docs){
+
+        const data = documento.data();
+
+        if(data.tipo !== "GENERAL"){
+            continue;
+        }
+
+        const id = data.id;
+
+        const div = document.createElement('div');
+
+        div.style.width = '1100px';
+        div.style.height = '120px';
+        div.style.background = '#f5f2ed';
+        div.style.borderRadius = '12px';
+        div.style.display = 'flex';
+        div.style.alignItems = 'center';
+        div.style.justifyContent = 'space-between';
+        div.style.position = 'absolute';
+        div.style.left = '-9999px';
+        div.style.overflow = 'hidden';
+        div.style.fontFamily = 'Arial';
+
+        div.innerHTML = `
+
+        <div style="
+            width:150px;
+            height:100%;
+            border-right:2px dashed #cfcfcf;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            gap:10px;
+            padding:10px;
+            box-sizing:border-box;
+        ">
+
+            <img
+            src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${id}"
+            style="
+            width:90px;
+            height:90px;
+            ">
+
+            <div style="
+            writing-mode:vertical-rl;
+            transform:rotate(180deg);
+            font-size:20px;
+            color:#111;
+            ">
+            ${id}
+            </div>
+
+        </div>
+
+        <div style="
+            flex:1;
+            text-align:center;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            gap:80px;
+        ">
+
+            <div style="
+            color:#c6a66a;
+            font-size:45px;
+            ">
+            ✦
+            </div>
+
+            <div style="
+            font-size:75px;
+            font-weight:300;
+            color:black;
+            letter-spacing:2px;
+            ">
+            prom<span style="color:#c6a66a;">26</span>
+            </div>
+
+            <div style="
+            color:#c6a66a;
+            font-size:45px;
+            ">
+            ✦
+            </div>
+
+        </div>
+
+        <div style="
+            width:120px;
+            height:100%;
+            border-left:2px dashed #cfcfcf;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            writing-mode:vertical-rl;
+            transform:rotate(180deg);
+            font-size:22px;
+            color:black;
+        ">
+
+        prom26
+
+        </div>
+
+        `;
+
+        document.body.appendChild(div);
+
+        const canvas = await html2canvas(div,{scale:2});
+
+        const imgData = canvas.toDataURL('image/png');
+
+        pdf.addImage(imgData,'PNG',x,y,250,28);
+
+        document.body.removeChild(div);
+
+        y += 35;
+
+        contador++;
+
+        if(contador % 7 === 0){
+
+            pdf.addPage();
+
+            y = 10;
+
+        }
+
+    }
+
+    pdf.save('PROM26-GENERALES.pdf');
+
+}
+
+</script>
+
+</body>
+</html>

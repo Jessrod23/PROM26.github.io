@@ -1,0 +1,103 @@
+/* ========================= */
+/* style.css */
+/* ========================= */
+
+body{
+    margin:0;
+    background:#0f0f0f;
+    color:white;
+    font-family:Arial;
+}
+
+header{
+    background:black;
+    padding:25px;
+    text-align:center;
+    font-size:40px;
+    font-weight:bold;
+}
+
+.container{
+    width:90%;
+    margin:auto;
+    padding:20px;
+}
+
+.card{
+    background:#181818;
+    padding:30px;
+    border-radius:20px;
+    margin-top:20px;
+}
+
+button{
+    width:100%;
+    padding:18px;
+    border:none;
+    border-radius:15px;
+    background:white;
+    color:black;
+    font-size:20px;
+    font-weight:bold;
+    cursor:pointer;
+    margin-top:15px;
+}
+
+.scannerBtn{
+    background:#00ff88;
+}
+
+.pdfBtn{
+    background:#00bfff;
+}
+
+#resultado{
+    margin-top:30px;
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    gap:20px;
+}
+
+.ticket{
+    background:#222;
+    padding:20px;
+    border-radius:20px;
+    text-align:center;
+}
+
+.ticket img{
+    width:180px;
+    background:white;
+    padding:10px;
+    border-radius:10px;
+}
+
+.vip{
+    border:3px solid gold;
+}
+
+.staff{
+    border:3px solid #00bfff;
+}
+
+.general{
+    border:3px solid white;
+}
+
+.stats-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:20px;
+}
+
+.stat-box{
+    background:#222;
+    padding:20px;
+    border-radius:20px;
+    text-align:center;
+}
+
+.stat-box h1{
+    font-size:45px;
+    margin:0;
+}

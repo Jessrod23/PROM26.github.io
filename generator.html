@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<head>
+<meta charset="UTF-8">
+<title>Pulsera</title>
+<link rel="stylesheet" href="style.css">
+
+<style>
+
+#wristband {
+  width: 900px;
+  height: 250px;
+  background: linear-gradient(45deg, black, #1a1a1a);
+  border: 3px solid white;
+  border-radius: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 30px;
+  margin: auto;
+  margin-top: 50px;
+}
+
+#left {
+  font-size: 40px;
+  font-weight: bold;
+}
+
+#right img {
+  width: 200px;
+}
+
+</style>
+
+</head>
+<body>
+
+<div id="wristband">
+
+  <div id="left">
+    PROM26
+    <br>
+    NOCHE INOLVIDABLE
+    <br>
+    <span id="codigo"></span>
+  </div>
+
+  <div id="right">
+    <img id="qr">
+  </div>
+
+</div>
+
+<script>
+
+const params = new URLSearchParams(window.location.search);
+
+const id = params.get('id');
+
+document.getElementById('codigo').innerText = id;
+
+document.getElementById('qr').src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${id}`;
+
+</script>
+
+</body>
+</html>

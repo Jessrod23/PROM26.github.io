@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>LOGIN PROM26</title>
+
+<link rel="stylesheet" href="style.css">
+
+<!-- FIREBASE -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+
+<style>
+
+body{
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    height:100vh;
+
+}
+
+.login-box{
+
+    width:350px;
+
+    background:#181818;
+
+    padding:40px;
+
+    border-radius:25px;
+
+    text-align:center;
+
+}
+
+.login-box h1{
+
+    margin-bottom:30px;
+
+    font-size:40px;
+
+}
+
+input{
+
+    width:100%;
+
+    padding:15px;
+
+    margin-top:15px;
+
+    border:none;
+
+    border-radius:12px;
+
+    font-size:18px;
+
+}
+
+button{
+
+    width:100%;
+
+    margin-top:20px;
+
+}
+
+.error{
+
+    color:red;
+
+    margin-top:15px;
+
+}
+
+</style>
+
+</head>
+<body>
+
+<div class="login-box">
+
+<h1>PROM26</h1>
+
+<input type="email" id="email" placeholder="Correo">
+
+<input type="password" id="password" placeholder="Contraseña">
+
+<button onclick="login()">
+INICIAR SESIÓN
+</button>
+
+<div id="error" class="error"></div>
+
+</div>
+
+<script>
+
+// =====================================
+// FIREBASE
+// =====================================
+
+const firebaseConfig = {
+
+  apiKey: "AIzaSyBtloFEBGr6Z2hFkT3zr02tgiu5IIyqBkE",
+
+  authDomain: "prom26-62dce.firebaseapp.com",
+
+  projectId: "prom26-62dce",
+
+  storageBucket: "prom26-62dce.firebasestorage.app",
+
+  messagingSenderId: "662057183440",
+
+  appId: "1:662057183440:web:96484f9031cbfb9b3596d5"
+
+};
+
+firebase.initializeApp(firebaseConfig);
+
+const auth = firebase.auth();
+
+// =====================================
+// LOGIN
+// =====================================
+
+async function login(){
+
+    const email = document.getElementById("email").value;
+
+    const password = document.getElementById("password").value;
+
+    try{
+
+        await auth.signInWithEmailAndPassword(email,password);
+
+        window.location.href = "index.html";
+
+    }catch(error){
+
+        document.getElementById("error").innerText =
+        "Correo o contraseña incorrectos";
+
+    }
+
+}
+
+</script>
+
+</body>
+</html>
