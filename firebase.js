@@ -1,34 +1,35 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+// ======================================
+// FIREBASE PROM26 NUEVO
+// ======================================
 
-import {
-  getFirestore,
-  doc,
-  setDoc,
-  getDoc,
-  updateDoc,
-  collection,
-  getDocs
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+// CONFIG
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBtloFEBGr6Z2hFkT3zr02tgiu5IIyqBkE",
-  authDomain: "prom26-62dce.firebaseapp.com",
-  projectId: "prom26-62dce",
-  storageBucket: "prom26-62dce.firebasestorage.app",
-  messagingSenderId: "662057183440",
-  appId: "1:662057183440:web:96484f9031cbfb9b3596d5"
+
+    apiKey: "AIzaSyBbD3UeqbZvUtvbPh8mWRYw9Ro7hc64sKE",
+
+    authDomain: "prom26-98b1a.firebaseapp.com",
+
+    projectId: "prom26-98b1a",
+
+    storageBucket: "prom26-98b1a.firebasestorage.app",
+
+    messagingSenderId: "12184183881",
+
+    appId: "1:12184183881:web:24197afc1b5e7a211c0b98",
+
+    measurementId: "G-2JTSEJSGTF"
+
 };
 
-const app = initializeApp(firebaseConfig);
+// INICIAR FIREBASE
 
-const db = getFirestore(app);
+firebase.initializeApp(firebaseConfig);
 
-export {
-  db,
-  doc,
-  setDoc,
-  getDoc,
-  updateDoc,
-  collection,
-  getDocs
-};
+// DATABASE
+
+const db = firebase.firestore();
+
+// AUTH
+
+const auth = firebase.auth();
