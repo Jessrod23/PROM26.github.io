@@ -1,3 +1,206 @@
+<!-- ====================================== -->
+<!-- scanner.html COMPLETO CORREGIDO -->
+<!-- ====================================== -->
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>ESCÁNER PROM26</title>
+
+<link rel="stylesheet" href="style.css">
+
+<!-- FIREBASE -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+
+<!-- TU FIREBASE -->
+<script src="firebase.js"></script>
+
+<!-- QR -->
+<script src="https://unpkg.com/html5-qrcode"></script>
+
+<style>
+
+#reader{
+
+    width:100%;
+
+    max-width:500px;
+
+    margin:auto;
+
+    background:white;
+
+    padding:20px;
+
+    border-radius:20px;
+
+}
+
+#resultadoScan{
+
+    margin-top:30px;
+
+    text-align:center;
+
+    font-size:35px;
+
+    font-weight:bold;
+
+}
+
+.success{
+
+    color:lime;
+
+}
+
+.error{
+
+    color:red;
+
+}
+
+.info{
+
+    color:#00bfff;
+
+}
+
+.estado-box{
+
+    background:#1a1a1a;
+
+    padding:20px;
+
+    border-radius:20px;
+
+    margin-top:20px;
+
+    text-align:center;
+
+}
+
+.nombre{
+
+    font-size:40px;
+
+    margin-top:15px;
+
+    color:#00ff88;
+
+}
+
+</style>
+
+</head>
+<body>
+
+<header>
+ESCÁNER PROM26
+</header>
+
+<div class="container">
+
+<div class="card">
+
+<h1>CONTROL DE ACCESO</h1>
+
+<div id="reader"></div>
+
+<div class="estado-box">
+
+<div id="resultadoScan">
+
+ESCANEA UN QR
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+// ======================================
+// VARIABLES
+// ======================================
+
+let escaneando = true;
+
+// ======================================
+// PROTEGER PANEL
+// ======================================
+
+firebase.auth().onAuthStateChanged((user)=>{
+
+    if(!user){
+
+        window.location.href = "login.html";
+
+    }
+
+});
+
+// ======================================
+// INICIAR SCANNER
+// ======================================
+
+function iniciarScanner(){
+
+    const html5QrCode = new Html5Qrcode("reader");
+
+    html5QrCode.start(
+
+        { facingMode: "environment" },
+
+        {
+
+            fps:10,
+
+            qrbox:250
+
+        },
+
+        async(decodedText)=>{
+
+            // EVITAR ESCANEO MULTIPLE
+
+            if(!escaneando){
+
+                return;
+
+            }
+
+            escaneando = false;
+
+            await verificarQR(decodedText);
+
+            setTimeout(()=>{
+
+                escaneando = true;
+
+            },2500);
+
+        }
+
+    );
+
+}
+
+// ======================================
+// VERIFICAR QR
+// ======================================
+
 async function verificarQR(id){
 
     const resultado = document.getElementById("resultadoScan");
@@ -28,7 +231,7 @@ async function verificarQR(id){
     const data = docSnap.data();
 
     // ======================================
-    // OBTENER NOMBRE
+    // NOMBRE
     // ======================================
 
     let nombre = "SIN REGISTRAR";
@@ -51,12 +254,16 @@ async function verificarQR(id){
         QR CLONADO ⚠️
         </div>
 
-        <div class="info">
+        <div class="nombre">
         ${nombre}
         </div>
 
-        <div>
+        <div class="info">
         ${id}
+        </div>
+
+        <div>
+        ${data.tipo}
         </div>
 
         `;
@@ -71,13 +278,16 @@ ${nombre}
 QR:
 ${id}
 
+TIPO:
+${data.tipo}
+
         `);
 
         return;
     }
 
     // ======================================
-    // ACTUALIZAR
+    // ACTUALIZAR FIREBASE
     // ======================================
 
     await docRef.update({
@@ -98,11 +308,11 @@ ${id}
     ACCESO PERMITIDO ✅
     </div>
 
-    <div class="info">
+    <div class="nombre">
     ${nombre}
     </div>
 
-    <div>
+    <div class="info">
     ${id}
     </div>
 
@@ -132,3 +342,14 @@ ${data.tipo}
     `);
 
 }
+
+// ======================================
+// INICIAR
+// ======================================
+
+iniciarScanner();
+
+</script>
+
+</body>
+</html>
