@@ -109,17 +109,7 @@ function iniciarScanner(){
             qrbox:250
         },
 
-        async(decodedText)=>{
-
-            verificarQR(decodedText);
-
-        }
-
-    );
-
-}
-
-async function verificarQR(id){
+      async function verificarQR(id){
 
     const resultado = document.getElementById("resultadoScan");
 
@@ -127,22 +117,35 @@ async function verificarQR(id){
 
     const docSnap = await docRef.get();
 
+    // =========================
+    // QR INVALIDO
+    // =========================
+
     if(!docSnap.exists){
 
         resultado.innerHTML = `
+
         <div class="error">
         QR INVÁLIDO ❌
         </div>
+
         `;
+
+        alert("QR INVÁLIDO ❌");
 
         return;
     }
 
     const data = docSnap.data();
 
+    // =========================
+    // QR CLONADO
+    // =========================
+
     if(data.usado){
 
         resultado.innerHTML = `
+
         <div class="error">
         QR CLONADO ⚠️
         </div>
@@ -150,10 +153,17 @@ async function verificarQR(id){
         <div class="info">
         ${id}
         </div>
+
         `;
+
+        alert("QR CLONADO ⚠️");
 
         return;
     }
+
+    // =========================
+    // ACTUALIZAR
+    // =========================
 
     await docRef.update({
 
@@ -161,6 +171,10 @@ async function verificarQR(id){
         horaEntrada:new Date()
 
     });
+
+    // =========================
+    // MOSTRAR
+    // =========================
 
     resultado.innerHTML = `
 
@@ -177,6 +191,21 @@ async function verificarQR(id){
     </div>
 
     `;
+
+    // =========================
+    // ALERTA
+    // =========================
+
+    alert(`
+
+ACCESO PERMITIDO ✅
+
+${id}
+
+TIPO:
+${data.tipo}
+
+    `);
 
 }
 
