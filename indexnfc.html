@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lector NFC Web</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #111827, #1f2937, #0f172a);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 520px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 25px;
+      padding: 25px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+      backdrop-filter: blur(12px);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 10px;
+      font-size: 32px;
+    }
+
+    .subtitulo {
+      text-align: center;
+      color: #d1d5db;
+      margin-bottom: 25px;
+    }
+
+    .estado {
+      text-align: center;
+      font-weight: bold;
+      padding: 14px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.12);
+      margin-bottom: 15px;
+    }
+
+    .resultado {
+      background: white;
+      color: #111827;
+      border-radius: 18px;
+      padding: 18px;
+      min-height: 150px;
+      word-wrap: break-word;
+    }
+
+    .resultado h2 {
+      margin-top: 0;
+      font-size: 20px;
+    }
+
+    .dato {
+      padding: 10px;
+      background: #f3f4f6;
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
+
+    .aviso {
+      margin-top: 15px;
+      font-size: 14px;
+      color: #d1d5db;
+      line-height: 1.5;
+      text-align: center;
+    }
+
+    .pulso {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      margin: 0 auto 20px;
+      background: rgba(34, 197, 94, 0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      animation: pulso 1.4s infinite;
+    }
+
+    @keyframes pulso {
+      0% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.08); opacity: 0.75; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="pulso">📲</div>
+    <h1>Lector NFC</h1>
+    <p class="subtitulo">Acerca una etiqueta NFC al celular para detectarla automáticamente.</p>
+
+    <div id="estado" class="estado">Activando lector NFC...</div>
+
+    <div class="resultado">
+      <h2>Datos leídos:</h2>
+      <div id="datos">Esperando etiqueta NFC...</div>
+    </div>
+
+    <p class="aviso">
+      Si no se activa solo, toca cualquier parte de la pantalla y vuelve a acercar la etiqueta NFC.
+    </p>
+  </div>
+
+  <script>
+    let lectorIniciado = false;
+
+    async function iniciarLecturaNFC() {
+      const estado = document.getElementById("estado");
+      const datos = document.getElementById("datos");
+
+      if (lectorIniciado) return;
+
+      if (!("NDEFReader" in window)) {
+        estado.textContent = "❌ Este navegador no soporta lectura NFC web.";
+        datos.innerHTML = "Usa Google Chrome en Android con NFC activado.";
+        return;
+      }
+
+      try {
+        const lector = new NDEFReader();
+        await lector.scan();
+        lectorIniciado = true;
+
+        estado.textContent = "✅ Lector NFC activo. Acerca una etiqueta.";
+        datos.innerHTML = "Esperando etiqueta NFC...";
+
+        lector.addEventListener("reading", function(event) {
+          let html = "";
+
+          html += `<div class="dato"><b>Número de serie:</b><br>${event.serialNumber || "No disponible"}</div>`;
+
+          for (const record of event.message.records) {
+            html += `<div class="dato"><b>Tipo:</b> ${record.recordType}<br>`;
+
+            if (record.data) {
+              const decoder = new TextDecoder(record.encoding || "utf-8");
+              const texto = decoder.decode(record.data);
+              html += `<b>Contenido:</b><br>${texto}`;
+            } else {
+              html += "Sin datos de texto.";
+            }
+
+            html += `</div>`;
+          }
+
+          datos.innerHTML = html;
+          estado.textContent = "✅ Etiqueta NFC detectada correctamente.";
+        });
+
+        lector.addEventListener("readingerror", function() {
+          estado.textContent = "⚠️ No se pudo leer la etiqueta. Intenta otra vez.";
+        });
+
+      } catch (error) {
+        estado.textContent = "⚠️ Toca la pantalla para activar el lector NFC.";
+        datos.innerHTML = "El navegador necesita permiso para usar NFC.";
+      }
+    }
+
+    window.addEventListener("load", iniciarLecturaNFC);
+    document.body.addEventListener("click", iniciarLecturaNFC);
+    document.body.addEventListener("touchstart", iniciarLecturaNFC);
+  </script>
+</body>
+</html>
