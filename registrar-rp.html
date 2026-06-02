@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registrar boletos a RP - PROM26</title>
+
+  <!-- Firebase compatible con HTML normal -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+  <!-- Escáner QR -->
+  <script src="https://unpkg.com/html5-qrcode"></script>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #080808;
+      color: white;
+      text-align: center;
+    }
+
+    header {
+      background: #111;
+      padding: 20px;
+      border-bottom: 2px solid #d4af37;
+    }
+
+    header h1 {
+      margin: 0;
+      color: #d4af37;
+      font-size: 30px;
+      letter-spacing: 2px;
+    }
+
+    header p {
+      margin: 8px 0 0;
+      color: #ddd;
+    }
+
+    .contenedor {
+      max-width: 600px;
+      margin: 25px auto;
+      background: #151515;
+      padding: 25px;
+      border-radius: 18px;
+      box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+    }
+
+    h2, h3 {
+      color: #d4af37;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+      color: #d4af37;
+      text-align: left;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 14px;
+      margin-top: 8px;
+      border-radius: 10px;
+      border: none;
+      font-size: 16px;
+      box-sizing: border-box;
+      outline: none;
+    }
+
+    button {
+      margin-top: 18px;
+      padding: 14px 20px;
+      border: none;
+      border-radius: 12px;
+      background: #d4af37;
+      color: #000;
+      font-size: 17px;
+      font-weight: bold;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    button:hover {
+      background: #f1cf5c;
+    }
+
+    #reader {
+      width: 100%;
+      max-width: 450px;
+      margin: 20px auto;
+      background: white;
+      padding: 10px;
+      border-radius: 15px;
+      box-sizing: border-box;
+    }
+
+    .resultado {
+      margin-top: 20px;
+      padding: 18px;
+      border-radius: 15px;
+      font-size: 18px;
+      font-weight: bold;
+      display: none;
+    }
+
+    .ok {
+      background: #0f5132;
+      color: #d1e7dd;
+    }
+
+    .error {
+      background: #842029;
+      color: #f8d7da;
+    }
+
+    .alerta {
+      background: #664d03;
+      color: #fff3cd;
+    }
+
+    .info-boleto {
+      background: #222;
+      padding: 15px;
+      border-radius: 12px;
+      margin-top: 15px;
+      text-align: left;
+      display: none;
+    }
+
+    .info-boleto p {
+      margin: 8px 0;
+    }
+
+    .menu {
+      margin-top: 25px;
+    }
+
+    .menu a {
+      color: #d4af37;
+      text-decoration: none;
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h1>PROM26</h1>
+  <p>Registro de boletos entregados a RP</p>
+</header>
+
+<div class="contenedor">
+
+  <h2>Asignar boleto a RP</h2>
+
+  <label>Nombre del RP</label>
+  <select id="rpSelect">
+    <option value="">Selecciona un RP</option>
+    <option value="Diego">Diego</option>
+    <option value="Yosgar">Yosgar</option>
+    <option value="Juan">Juan</option>
+    <option value="Ángel">Ángel</option>
+    <option value="Otro">Otro RP</option>
+  </select>
+
+  <input type="text" id="rpOtro" placeholder="Escribe el nombre del RP" style="display:none;">
+
+  <label>Código del boleto</label>
+  <input type="text" id="codigoManual" placeholder="Ejemplo: PROM26-0001">
+
+  <button onclick="registrarManual()">Registrar manualmente</button>
+
+  <h3>O escanea el QR</h3>
+
+  <div id="reader"></div>
+
+  <div id="resultado" class="resultado"></div>
+
+  <div id="datosBoleto" class="info-boleto"></div>
+
+  <div class="menu">
+    <a href="admin.html">Volver al panel admin</a>
+    <a href="scanner.html">Ir al escáner de entrada</a>
+  </div>
+
+</div>
+
+<script>
+  // ======================================
+  // FIREBASE PROM26
+  // ======================================
+  const firebaseConfig = {
+    apiKey: "AIzaSyBtloFEBGr6Z2hFkT3zr02tgiu5IIyqBkE",
+    authDomain: "prom26-62dce.firebaseapp.com",
+    databaseURL: "https://prom26-62dce-default-rtdb.firebaseio.com",
+    projectId: "prom26-62dce",
+    storageBucket: "prom26-62dce.firebasestorage.app",
+    messagingSenderId: "662057183440",
+    appId: "1:662057183440:web:96484f9031cbfb9b3596d5"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+
+  const resultado = document.getElementById("resultado");
+  const datosBoleto = document.getElementById("datosBoleto");
+  const rpSelect = document.getElementById("rpSelect");
+  const rpOtro = document.getElementById("rpOtro");
+
+  let ultimoCodigoEscaneado = "";
+
+  rpSelect.addEventListener("change", () => {
+    if (rpSelect.value === "Otro") {
+      rpOtro.style.display = "block";
+    } else {
+      rpOtro.style.display = "none";
+      rpOtro.value = "";
+    }
+  });
+
+  function obtenerRP() {
+    let rp = rpSelect.value;
+
+    if (rp === "Otro") {
+      rp = rpOtro.value.trim();
+    }
+
+    return rp;
+  }
+
+  function mostrarMensaje(texto, tipo) {
+    resultado.style.display = "block";
+    resultado.className = "resultado " + tipo;
+    resultado.innerHTML = texto;
+  }
+
+  function limpiarTextoQR(texto) {
+    return texto.trim();
+  }
+
+  async function buscarBoleto(codigo) {
+    // Busca primero usando el código como ID del documento
+    let docRef = db.collection("boletos").doc(codigo);
+    let docSnap = await docRef.get();
+
+    if (docSnap.exists) {
+      return {
+        existe: true,
+        ref: docRef,
+        data: docSnap.data()
+      };
+    }
+
+    // Si no existe como ID, busca por el campo codigo
+    let query = await db.collection("boletos")
+      .where("codigo", "==", codigo)
+      .limit(1)
+      .get();
+
+    if (!query.empty) {
+      let doc = query.docs[0];
+      return {
+        existe: true,
+        ref: doc.ref,
+        data: doc.data()
+      };
+    }
+
+    return {
+      existe: false
+    };
+  }
+
+  async function registrarBoletoRP(codigo) {
+    const rp = obtenerRP();
+
+    if (!rp) {
+      mostrarMensaje("Primero selecciona o escribe el nombre del RP.", "alerta");
+      return;
+    }
+
+    if (!codigo) {
+      mostrarMensaje("No se detectó ningún código de boleto.", "error");
+      return;
+    }
+
+    try {
+      const boleto = await buscarBoleto(codigo);
+
+      if (!boleto.existe) {
+        mostrarMensaje("Este boleto no existe en la base de datos:<br><br>" + codigo, "error");
+        datosBoleto.style.display = "none";
+        return;
+      }
+
+      const data = boleto.data;
+
+      if (data.rpAsignado && data.rpAsignado !== rp) {
+        const confirmar = confirm(
+          "Este boleto ya estaba asignado al RP: " + data.rpAsignado +
+          "\n\n¿Quieres cambiarlo a: " + rp + "?"
+        );
+
+        if (!confirmar) {
+          mostrarMensaje("No se modificó el boleto.", "alerta");
+          return;
+        }
+      }
+
+      await boleto.ref.update({
+        rpAsignado: rp,
+        entregadoRP: true,
+        fechaEntregaRP: firebase.firestore.FieldValue.serverTimestamp()
+      });
+
+      mostrarMensaje(
+        "Boleto registrado correctamente para el RP:<br><br><b>" + rp + "</b>",
+        "ok"
+      );
+
+      datosBoleto.style.display = "block";
+      datosBoleto.innerHTML = `
+        <p><b>Código:</b> ${codigo}</p>
+        <p><b>RP asignado:</b> ${rp}</p>
+        <p><b>Tipo:</b> ${data.tipo || "No especificado"}</p>
+        <p><b>Estado:</b> ${data.usado ? "Ya usado/escaneado en entrada" : "No usado todavía"}</p>
+      `;
+
+      document.getElementById("codigoManual").value = "";
+
+    } catch (error) {
+      console.error(error);
+      mostrarMensaje("Ocurrió un error al registrar el boleto. Revisa Firebase o la consola.", "error");
+    }
+  }
+
+  function registrarManual() {
+    const codigo = document.getElementById("codigoManual").value.trim();
+    registrarBoletoRP(codigo);
+  }
+
+  function iniciarScanner() {
+    const html5QrCode = new Html5Qrcode("reader");
+
+    Html5Qrcode.getCameras().then(cameras => {
+      if (cameras && cameras.length) {
+        html5QrCode.start(
+          { facingMode: "environment" },
+          {
+            fps: 10,
+            qrbox: 250
+          },
+          qrCodeMessage => {
+            const codigo = limpiarTextoQR(qrCodeMessage);
+
+            if (codigo === ultimoCodigoEscaneado) {
+              return;
+            }
+
+            ultimoCodigoEscaneado = codigo;
+
+            document.getElementById("codigoManual").value = codigo;
+            registrarBoletoRP(codigo);
+
+            setTimeout(() => {
+              ultimoCodigoEscaneado = "";
+            }, 3000);
+          },
+          errorMessage => {
+            // No mostrar errores repetitivos del escáner
+          }
+        );
+      } else {
+        mostrarMensaje("No se encontró cámara disponible.", "error");
+      }
+    }).catch(err => {
+      console.error(err);
+      mostrarMensaje("No se pudo abrir la cámara. Revisa los permisos del navegador.", "error");
+    });
+  }
+
+  iniciarScanner();
+</script>
+
+</body>
+</html>
