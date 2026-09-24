@@ -1,583 +1,600 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CAFETE 43 - Menú Digital Premium</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Montserrat:ital,wght@0,400;0,700;0,900;1,800&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+        :root {
+            --bg-color: #080808;
+            --text-main: #ffffff;
+            --accent-red: #e61919;
+            --accent-yellow: #feca57;
+            --font-title: 'Dancing Script', cursive;
+            --font-body: 'Montserrat', sans-serif;
+        }
 
-<title>PROM26 ADMIN</title>
+        body, html {
+            width: 100vw;
+            height: 100vh;
+            background-color: var(--bg-color);
+            background-image: radial-gradient(circle at center, #1c1c1c 0%, #000000 100%);
+            color: var(--text-main);
+            font-family: var(--font-body);
+            overflow: hidden; /* Restricción estricta de scroll para pantallas de TV */
+        }
 
-<link rel="stylesheet" href="style.css">
+        .menu-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
 
-<!-- FIREBASE -->
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+        /* Sistema de 4 pantallas rotativas (32 segundos en total) */
+        .screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            /* La opacidad controla la visibilidad suavemente */
+            animation: ultraSmoothCrossfade 32s infinite; 
+        }
 
-<!-- PDF -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+        /* Delays exactos para que se crucen perfectamente cada 8 segundos */
+        .screen:nth-child(1) { animation-delay: 0s; }
+        .screen:nth-child(2) { animation-delay: 8s; }
+        .screen:nth-child(3) { animation-delay: 16s; }
+        .screen:nth-child(4) { animation-delay: 24s; }
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+        @keyframes ultraSmoothCrossfade {
+            0%   { opacity: 0; z-index: 1; }
+            5%   { opacity: 1; z-index: 2; }
+            25%  { opacity: 1; z-index: 2; }
+            30%  { opacity: 0; z-index: 1; }
+            100% { opacity: 0; z-index: 1; }
+        }
 
+        /* Estructura para Pantallas 1, 2 y 3 */
+        .screen-grid {
+            display: grid;
+            grid-template-columns: 25% 1fr 1fr;
+        }
+
+        /* Columna Izquierda (Marca y Doble QR) */
+        .col-left {
+            border-right: 2px dashed rgba(230, 25, 25, 0.3);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+            text-align: center;
+            background: linear-gradient(to right, transparent, rgba(0,0,0,0.4));
+        }
+
+        .brand-logo {
+            font-size: 2.8rem;
+            font-weight: 900;
+            letter-spacing: 4px;
+            margin-bottom: 0.2rem;
+            text-shadow: 0 0 10px rgba(230, 25, 25, 0.3);
+        }
+
+        .brand-location {
+            font-size: 0.9rem;
+            letter-spacing: 6px;
+            text-transform: uppercase;
+            color: #aaaaaa;
+            margin-bottom: 0.5rem;
+        }
+
+        .screen-title {
+            font-family: var(--font-title);
+            color: var(--accent-red);
+            font-size: 5rem;
+            line-height: 0.8;
+            margin: 0.2rem 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+            transform: rotate(-3deg);
+        }
+        
+        .divider {
+            width: 60px;
+            height: 4px;
+            background-color: var(--accent-red);
+            border-radius: 2px;
+            margin: 1rem 0;
+        }
+
+        .qrs-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+            margin-top: 0.5rem;
+            width: 100%;
+            align-items: center;
+        }
+
+        .qr-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: rgba(255,255,255,0.03);
+            padding: 0.8rem;
+            border-radius: 12px;
+            border: 1px solid rgba(230, 25, 25, 0.4);
+            width: 90%;
+        }
+
+        .qr-text {
+            font-size: 1rem; /* Aumentado de 0.8rem a 1rem */
+            font-weight: 700;
+            margin-bottom: 0.3rem;
+            color: var(--text-main);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* FOTOS DE LOS QR HECHAS MUCHO MÁS GRANDES */
+        .qr-image {
+            width: 140px;  /* Aumentado de 90px a 140px */
+            height: 140px; /* Aumentado de 90px a 140px */
+            background-color: white;
+            object-fit: contain;
+            border-radius: 8px;
+            padding: 4px;
+        }
+
+        /* Columnas de Productos */
+        .col-products {
+            padding: 1.5rem 3rem 1.5rem 2rem; 
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 0.8rem; 
+        }
+
+        .product-item {
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
+
+        .product-img {
+            width: 180px; 
+            height: 180px; 
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid var(--accent-red);
+            flex-shrink: 0;
+            margin-right: 1.5rem;
+            background-color: #1a1a1a;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.6);
+        }
+
+        .product-info {
+            flex-grow: 1;
+            display: flex;
+            align-items: baseline;
+            width: 100%;
+        }
+
+        .product-name {
+            font-family: var(--font-title);
+            color: var(--accent-red);
+            font-size: 2.5rem;
+            line-height: 1;
+            white-space: nowrap;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+        }
+
+        .product-dots {
+            flex-grow: 1;
+            border-bottom: 2px dotted rgba(255, 255, 255, 0.4);
+            margin: 0 12px;
+            min-width: 20px;
+            position: relative;
+            top: -5px;
+        }
+
+        .product-price {
+            font-size: 2.2rem;
+            font-weight: 900;
+            font-style: italic;
+            color: var(--accent-yellow);
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        /* =========================================
+           ESTRUCTURA PANTALLA 4 (ESPECIAL DEL DÍA)
+           ========================================= */
+        .screen-special {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .special-banner {
+            position: absolute;
+            top: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--accent-red);
+            color: white;
+            padding: 1rem 3rem;
+            font-size: 2.5rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            border-radius: 50px;
+            box-shadow: 0 10px 20px rgba(230, 25, 25, 0.5);
+            z-index: 10;
+        }
+
+        .special-half {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .special-left {
+            border-right: 3px dashed rgba(255,255,255,0.2);
+        }
+
+        .special-img {
+            width: 500px; 
+            height: 500px; 
+            border-radius: 50%;
+            object-fit: cover;
+            border: 8px solid var(--accent-red);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.8);
+            margin-bottom: 1.5rem;
+            background-color: #222;
+        }
+
+        .special-title {
+            font-family: var(--font-title);
+            color: var(--accent-red);
+            font-size: 6rem;
+            line-height: 0.9;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.9);
+            transform: rotate(-3deg);
+            margin-bottom: 0.5rem;
+        }
+
+        .special-price {
+            font-size: 5rem;
+            font-weight: 900;
+            font-style: italic;
+            color: var(--accent-yellow);
+            text-shadow: 2px 2px 10px rgba(254, 202, 87, 0.3);
+        }
+
+    </style>
 </head>
 <body>
 
-<header>
-PROM26 ADMIN
-</header>
-
-<div class="container">
-
-<!-- ====================================== -->
-<!-- BOTON CERRAR SESION -->
-<!-- ====================================== -->
-
-<div class="card">
-
-<button onclick="logout()" class="logoutBtn">
-CERRAR SESIÓN
-</button>
-
-</div>
-
-<!-- ====================================== -->
-<!-- STATS -->
-<!-- ====================================== -->
-
-<div class="card">
-
-<h1>MONITOREO EN VIVO</h1>
-
-<div class="stats-grid">
-
-<div class="stat-box">
-<h3>TOTAL ENTRARON</h3>
-<h1 id="totalEntraron">0</h1>
-</div>
-
-<div class="stat-box">
-<h3>FALTAN</h3>
-<h1 id="faltan">400</h1>
-</div>
-
-<div class="stat-box">
-<h3>VIP DENTRO</h3>
-<h1 id="vipEntraron">0</h1>
-</div>
-
-<div class="stat-box">
-<h3>STAFF DENTRO</h3>
-<h1 id="staffEntraron">0</h1>
-</div>
-
-<div class="stat-box">
-<h3>GENERAL DENTRO</h3>
-<h1 id="generalEntraron">0</h1>
-</div>
-
-</div>
-
-</div>
-
-<!-- ====================================== -->
-<!-- BOTONES -->
-<!-- ====================================== -->
-
-<div class="card">
-
-<h1>GENERAR BOLETOS</h1>
-
-<button onclick="generarBoletos()">
-GENERAR 400 BOLETOS
-</button>
-
-<a href="scanner.html">
-
-<button class="scannerBtn">
-ABRIR ESCÁNER
-</button>
-
-</a>
-
-<a href="qrs.html">
-
-<button class="qrBtn">
-VER TODOS LOS QR
-</button>
-
-</a>
-  <a href="registrar-rp.html">
-  <button>Registrar boletos a RP</button>
-</a>
-
-
-  <a href="info-boleto.html">
-  <button>Consultar información de boleto</button>
-</a>
-
-<button onclick="descargarPDF()" class="pdfBtn">
-DESCARGAR PDF GENERAL
-</button>
-
-<button onclick="borrarBoletos()" style="background:red;">
-BORRAR TODOS LOS BOLETOS
-</button>
-
-<a href="staff.html">
-
-<button style="background:#00bfff;">
-VER STAFF
-</button>
-
-</a>
-
-<a href="registro.html">
-
-<button style="background:orange;">
-REGISTRAR PERSONAS
-</button>
-
-</a>
-
-</div>
-
-<!-- ====================================== -->
-<!-- RESULTADOS -->
-<!-- ====================================== -->
-
-<div id="resultado"></div>
-
-</div>
-
-<script>
-
-// ======================================
-// FIREBASE
-// ======================================
-
-const firebaseConfig = {
-
-  apiKey: "AIzaSyBtloFEBGr6Z2hFkT3zr02tgiu5IIyqBkE",
-
-  authDomain: "prom26-62dce.firebaseapp.com",
-
-  projectId: "prom26-62dce",
-
-  storageBucket: "prom26-62dce.firebasestorage.app",
-
-  messagingSenderId: "662057183440",
-
-  appId: "1:662057183440:web:96484f9031cbfb9b3596d5"
-
-};
-
-firebase.initializeApp(firebaseConfig);
-
-const db = firebase.firestore();
-
-// ======================================
-// PROTEGER PANEL
-// ======================================
-
-firebase.auth().onAuthStateChanged((user)=>{
-
-    if(!user){
-
-        window.location.href = "login.html";
-
-    }
-
-});
-
-// ======================================
-// LOGOUT
-// ======================================
-
-function logout(){
-
-    firebase.auth().signOut();
-
-    window.location.href = "login.html";
-
-}
-
-// ======================================
-// ACTUALIZAR STATS
-// ======================================
-
-actualizarStats();
-
-async function actualizarStats(){
-
-    const snapshot = await db.collection("boletos").get();
-
-    let totalEntraron = 0;
-    let vipEntraron = 0;
-    let staffEntraron = 0;
-    let generalEntraron = 0;
-
-    snapshot.forEach((doc)=>{
-
-        const data = doc.data();
-
-        if(data.usado){
-
-            totalEntraron++;
-
-            if(data.tipo === "VIP"){
-                vipEntraron++;
-            }
-
-            if(data.tipo === "STAFF"){
-                staffEntraron++;
-            }
-
-            if(data.tipo === "GENERAL"){
-                generalEntraron++;
-            }
-
-        }
-
-    });
-
-    document.getElementById("totalEntraron").innerText = totalEntraron;
-
-    document.getElementById("faltan").innerText = 400 - totalEntraron;
-
-    document.getElementById("vipEntraron").innerText = vipEntraron;
-
-    document.getElementById("staffEntraron").innerText = staffEntraron;
-
-    document.getElementById("generalEntraron").innerText = generalEntraron;
-
-}
-
-// ======================================
-// GENERAR BOLETOS
-// ======================================
-
-async function generarBoletos(){
-
-    const snapshot = await db.collection("boletos").get();
-
-    if(snapshot.size > 0){
-
-        alert("LOS BOLETOS YA EXISTEN");
-
-        return;
-
-    }
-
-    const resultado = document.getElementById("resultado");
-
-    resultado.innerHTML = "";
-
-    // VIP
-
-    for(let i=1;i<=20;i++){
-
-        const numero = String(i).padStart(3,'0');
-
-        const id = `VIP-${numero}`;
-
-        await db.collection("boletos").doc(id).set({
-
-            id:id,
-            tipo:"VIP",
-            usado:false
-
-        });
-
-        crearTarjeta(id,"VIP","vip");
-
-    }
-
-    // STAFF
-
-    for(let i=1;i<=10;i++){
-
-        const numero = String(i).padStart(3,'0');
-
-        const id = `STAFF-${numero}`;
-
-        await db.collection("boletos").doc(id).set({
-
-            id:id,
-            tipo:"STAFF",
-            usado:false
-
-        });
-
-        crearTarjeta(id,"STAFF","staff");
-
-    }
-
-    // GENERAL
-
-    for(let i=1;i<=370;i++){
-
-        const numero = String(i).padStart(4,'0');
-
-        const id = `PROM26-${numero}`;
-
-        await db.collection("boletos").doc(id).set({
-
-            id:id,
-            tipo:"GENERAL",
-            usado:false
-
-        });
-
-        crearTarjeta(id,"GENERAL","general");
-
-    }
-
-    alert("400 BOLETOS GENERADOS 🔥");
-
-}
-
-// ======================================
-// BORRAR TODOS LOS BOLETOS
-// ======================================
-
-async function borrarBoletos(){
-
-    const confirmar = confirm(
-        "¿SEGURO QUE QUIERES BORRAR TODOS LOS BOLETOS?"
-    );
-
-    if(!confirmar){
-
-        return;
-
-    }
-
-    try{
-
-        const snapshot = await db.collection("boletos").get();
-
-        if(snapshot.empty){
-
-            alert("NO HAY BOLETOS");
-
-            return;
-
-        }
-
-        for(const documento of snapshot.docs){
-
-            await db
-            .collection("boletos")
-            .doc(documento.id)
-            .delete();
-
-        }
-
-        document.getElementById("resultado").innerHTML = "";
-
-        document.getElementById("totalEntraron").innerText = "0";
-
-        document.getElementById("faltan").innerText = "400";
-
-        document.getElementById("vipEntraron").innerText = "0";
-
-        document.getElementById("staffEntraron").innerText = "0";
-
-        document.getElementById("generalEntraron").innerText = "0";
-
-        alert("TODOS LOS BOLETOS FUERON BORRADOS 🔥");
-
-    }catch(error){
-
-        console.log(error);
-
-        alert("ERROR AL BORRAR ❌");
-
-    }
-
-}
-
-// ======================================
-// CREAR TARJETAS
-// ======================================
-
-function crearTarjeta(id,tipo,clase){
-
-    const resultado = document.getElementById("resultado");
-
-    resultado.innerHTML += `
-
-    <div class="ticket ${clase}">
-
-        <h2>PROM26</h2>
-
-        <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${id}">
-
-        <div class="tipo">${tipo}</div>
-
-        <div class="codigo">${id}</div>
-
+<div class="menu-container">
+
+    <!-- ================== PANTALLA 1: COMIDA ================== -->
+    <div class="screen screen-grid">
+        <div class="col-left">
+            <div class="brand-logo">CAFETE 43</div>
+            <div class="brand-location">Las Choapas</div>
+            <div class="divider"></div>
+            <h1 class="screen-title">Comida</h1>
+            
+            <div class="qrs-container">
+                <div class="qr-wrapper">
+                    <div class="qr-text">Ordena aquí</div>
+                    <img src="https://i.ibb.co/gF3BPmVm/Dise-o-sin-t-tulo-4.png" alt="QR Ordenar" class="qr-image">
+                </div>
+                <div class="qr-wrapper">
+                    <div class="qr-text">SPOTIFY</div>
+                    <img src="https://i.ibb.co/Ps0v45Lv/Dise-o-sin-t-tulo-5.png" alt="QR Pagar" class="qr-image">
+                </div>
+            </div>
+        </div>
+
+        <div class="col-products">
+            <div class="product-item">
+                <img src="https://golderie.com/wp-content/uploads/2022/01/12-Foam-B-8.png" alt="Salchipapas" class="product-img">
+                <div class="product-info">
+                    <span class="product-name">Salchipapas</span>
+                    <div class="product-dots"></div>
+                    <span class="product-price">$35</span>
+                </div>
+            </div>
+            <div class="product-item">
+                <img src="https://tacovelozdenver.com/wp-content/uploads/2025/02/menu_charra-600x600.png" alt="Quesadillas Norteñas" class="product-img">
+                <div class="product-info">
+                    <span class="product-name">Quesadillas Norteñas</span>
+                    <div class="product-dots"></div>
+                    <span class="product-price">$35</span>
+                </div>
+            </div>
+            <div class="product-item">
+                <img src="TU_ENLACE_AQUI.jpg" alt="Tortas de Cochinita" class="product-img">
+                <div class="product-info">
+                    <span class="product-name">Tortas de Cochinita</span>
+                    <div class="product-dots"></div>
+                    <span class="product-price">$30</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-products">
+            <div class="product-item">
+                <img src="https://apycojkhlfglzdxvzyyg.supabase.co/storage/v1/object/public/public_uploads/f2aa5b83-5fd2-4ddd-a2a8-fbb7f1f125e4/products/80?2025-08-27T02:40:42.480176+00:00" alt="Esquisopa" class="product-img">
+                <div class="product-info">
+                    <span class="product-name">Esquisopa</span>
+                    <div class="product-dots"></div>
+                    <span class="product-price">$45</span>
+                </div>
+            </div>
+            <div class="product-item">
+                <img src="https://www.pngkey.com/png/full/311-3119541_french-fries.png" alt="Tostilocos" class="product-img">
+                <div class="product-info">
+                    <span class="product-name">Tostilocos</span>
+                    <div class="product-dots"></div>
+                    <span class="product-price">$45</span>
+                </div>
+            </div>
+            <div class="product-item">
+                <img src="TU_ENLACE_AQUI.jpg" alt="Nachos" class="product-img">
+                <div class="product-info">
+                    <span class="product-name">Nachos</span>
+                    <div class="product-dots"></div>
+                    <span class="product-price">$35</span>
+                </div>
+            </div>
+        </div>
     </div>
 
-    `;
-
-}
-
-// ======================================
-// PDF PULSERAS GENERAL
-// ======================================
-
-async function descargarPDF(){
-
-    const { jsPDF } = window.jspdf;
-
-    const pdf = new jsPDF('l', 'mm', 'a4');
-
-    const boletos = await db.collection("boletos").get();
-
-    let x = 10;
-    let y = 10;
-
-    let contador = 0;
-
-    for(const documento of boletos.docs){
-
-        const data = documento.data();
-
-        if(data.tipo !== "GENERAL"){
-            continue;
-        }
-
-        const id = data.id;
-
-        const div = document.createElement('div');
-
-        div.style.width = '1100px';
-        div.style.height = '120px';
-        div.style.background = '#f5f2ed';
-        div.style.borderRadius = '12px';
-        div.style.display = 'flex';
-        div.style.alignItems = 'center';
-        div.style.justifyContent = 'space-between';
-        div.style.position = 'absolute';
-        div.style.left = '-9999px';
-        div.style.overflow = 'hidden';
-        div.style.fontFamily = 'Arial';
-
-        div.innerHTML = `
-
-        <div style="
-            width:150px;
-            height:100%;
-            border-right:2px dashed #cfcfcf;
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            gap:10px;
-            padding:10px;
-            box-sizing:border-box;
-        ">
-
-            <img
-            src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${id}"
-            style="
-            width:90px;
-            height:90px;
-            ">
-
-            <div style="
-            writing-mode:vertical-rl;
-            transform:rotate(180deg);
-            font-size:20px;
-            color:#111;
-            ">
-            ${id}
+    <!-- ================== PANTALLA 2: SNACKS ================== -->
+    <div class="screen screen-grid">
+        <div class="col-left">
+            <div class="brand-logo">CAFETE 43</div>
+            <div class="brand-location">Las Choapas</div>
+            <div class="divider"></div>
+            <h1 class="screen-title">Snacks</h1>
+            
+            <div class="qrs-container">
+                <div class="qr-wrapper">
+                    <div class="qr-text">Ordena aquí</div>
+                    <img src="https://i.ibb.co/gF3BPmVm/Dise-o-sin-t-tulo-4.png" alt="QR Ordenar" class="qr-image">
+                </div>
+                <div class="qr-wrapper">
+                    <div class="qr-text">SPOTIFY</div>
+                    <img src="https://i.ibb.co/Ps0v45Lv/Dise-o-sin-t-tulo-5.png" alt="QR Pagar" class="qr-image">
+                </div>
             </div>
-
         </div>
 
-        <div style="
-            flex:1;
-            text-align:center;
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            gap:80px;
-        ">
-
-            <div style="
-            color:#c6a66a;
-            font-size:45px;
-            ">
-            ✦
+        <div class="col-products">
+            <div class="product-item">
+                <img src="https://cdn.shoplightspeed.com/shops/634096/files/69161617/papas-adobadas-con-aceite-de-coco-im-chips-60-gr.jpg" alt="Papas Adobadas" class="product-img">
+                <div class="product-info">
+                    <span class="product-name">Papas Adobadas</span>
+                    <div class="product-dots"></div>
+                    <span class="product-price">$30</span>
+                </div>
             </div>
-
-            <div style="
-            font-size:75px;
-            font-weight:300;
-            color:black;
-            letter-spacing:2px;
-            ">
-            prom<span style="color:#c6a66a;">26</span>
+            <div class="product-item">
+                <img src="https://www.mercadosantaana.com/pub/media/catalog/product/cache/ca3ea98566fd87b3fcbcc859133d6a43/p/h/photoroom-20221122_222758_11.png" alt="Plátanos Salados" class="product-img">
+                <div class="product-info">
+                    <span class="product-name">Plátanos Salados</span>
+                    <div class="product-dots"></div>
+                    <span class="product-price">$25</span>
+                </div>
             </div>
-
-            <div style="
-            color:#c6a66a;
-            font-size:45px;
-            ">
-            ✦
+            <div class="product-item">
+                <img src="https://http2.mlstatic.com/D_NQ_NP_884963-MLM82174803902_022025-O.webp" alt="Malangas" class="product-img">
+                <div class="product-info">
+                    <span class="product-name">Malangas</span>
+                    <div class="product-dots"></div>
+                    <span class="product-price">$25</span>
+                </div>
             </div>
-
+            <div class="product-item">
+                <img src="TU_ENLACE_AQUI.jpg" alt="Palomitas" class="product-img">
+                <div class="product-info">
+                    <span class="product-name">Palomitas</span>
+                    <div class="product-dots"></div>
+                    <span class="product-price">$25</span>
+                </div>
+            </div>
+            <div class="product-item">
+                <img src="TU_ENLACE_AQUI.jpg" alt="Dulces" class="product-img">
+                <div class="product-info">
+                    <span class="product-name">Platanos dulces</span>
+                    <div class="product-dots"></div>
+                    <span class="product-price">$25</span>
+                </div>
+            </div>
         </div>
 
-        <div style="
-            width:120px;
-            height:100%;
-            border-left:2px dashed #cfcfcf;
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            writing-mode:vertical-rl;
-            transform:rotate(180deg);
-            font-size:22px;
-            color:black;
-        ">
+        <div class="col-products">
+            <div class="product-item">
+                <img src="https://www.gamesacookies.com/sites/gamesa.com/files//2021-11/arcoiris-express-v2.png" alt="Galletas Arcoíris" class="product-img">
+                <div class="product-info">
+                    <span class="product-name">Galletas Arcoíris</span>
+                    <div class="product-dots"></div>
+                    <span class="product-price">$25</span>
+                </div>
+            </div>
+            <div class="product-item">
+                <img src="https://www.azucardulcerias.com/cdn/shop/files/544f0f995222877cc624ccfb3c86160b.png?v=1782317671&width=1000" alt="Emperador" class="product-img">
+                <div class="product-info">
+                    <span class="product-name">Emperador</span>
+                    <div class="product-dots"></div>
+                    <span class="product-price">$25</span>
+                </div>
+            </div>
+            <div class="product-item">
+                <img src="https://www.super99.com/media/catalog/product/2/0/20086792_1.png" alt="Cremax" class="product-img">
+                <div class="product-info">
+                    <span class="product-name">Cremax</span>
+                    <div class="product-dots"></div>
+                    <span class="product-price">$25</span>
+                </div>
+            </div>
+            <div class="product-item">
+                <img src="https://superdulces.com/cdn/shop/files/af61bd002f8cbcacbe2899bdf35aed62.png?v=1737672156" alt="Oreo" class="product-img">
+                <div class="product-info">
+                    <span class="product-name">Oreo</span>
+                    <div class="product-dots"></div>
+                    <span class="product-price">$25</span>
+                </div>
+            </div>
+            <div class="product-item">
+                <img src="https://www.azucardulcerias.com/cdn/shop/files/840057e8e1fa8e01e1e8a1a9693baf0e.png?v=1782316521&width=1000" alt="Príncipe / Canelitas" class="product-img">
+                <div class="product-info">
+                    <span class="product-name" style="font-size: 2rem;">Príncipe / Canelitas</span>
+                    <div class="product-dots"></div>
+                    <span class="product-price">$10 <span style="font-size: 1rem;">c/u</span></span>
+                </div>
+            </div>
+        </div>
+    </div>
 
-        prom26
-
+    <!-- ================== PANTALLA 3: BEBIDAS ================== -->
+    <div class="screen screen-grid">
+        <div class="col-left">
+            <div class="brand-logo">CAFETE 43</div>
+            <div class="brand-location">Las Choapas</div>
+            <div class="divider"></div>
+            <h1 class="screen-title">Bebidas</h1>
+            
+            <div class="qrs-container">
+                <div class="qr-wrapper">
+                    <div class="qr-text">Ordena aquí</div>
+                    <img src="https://i.ibb.co/gF3BPmVm/Dise-o-sin-t-tulo-4.png" alt="QR Ordenar" class="qr-image">
+                </div>
+                <div class="qr-wrapper">
+                    <div class="qr-text">SPOTIFY</div>
+                    <img src="https://i.ibb.co/Ps0v45Lv/Dise-o-sin-t-tulo-5.png" alt="QR Pagar" class="qr-image">
+                </div>
+            </div>
         </div>
 
-        `;
+        <div class="col-products">
+            <div class="product-item">
+                <img src="https://espadasgroup.com/wp-content/uploads/2025/06/HORCHATA-LITRO.jpg" alt="Horchata 1L" class="product-img">
+                <div class="product-info">
+                    <span class="product-name">Horchata 1L</span>
+                    <div class="product-dots"></div>
+                    <span class="product-price">$30</span>
+                </div>
+            </div>
+            <div class="product-item">
+                <img src="https://espadasgroup.com/wp-content/uploads/2025/06/HORCHATA-LITRO.jpg" alt="Horchata 500ml" class="product-img">
+                <div class="product-info">
+                    <span class="product-name">Horchata 500ml</span>
+                    <div class="product-dots"></div>
+                    <span class="product-price">$15</span>
+                </div>
+            </div>
+            <div class="product-item">
+                <img src="https://naturalbalance.club/cdn/shop/files/Limonadaconjamaica.png?v=1768517485" alt="Jamaica 1L" class="product-img">
+                <div class="product-info">
+                    <span class="product-name">Jamaica 1L</span>
+                    <div class="product-dots"></div>
+                    <span class="product-price">$25</span>
+                </div>
+            </div>
+            <div class="product-item">
+                <img src="https://naturalbalance.club/cdn/shop/files/Limonadaconjamaica.png?v=1768517485" alt="Jamaica 500ml" class="product-img">
+                <div class="product-info">
+                    <span class="product-name">Jamaica 500ml</span>
+                    <div class="product-dots"></div>
+                    <span class="product-price">$15</span>
+                </div>
+            </div>
+            <div class="product-item">
+                <img src="https://tusuperissste.com.mx/wp-content/uploads/2025/11/75007614-coca-cola-600-ml.webp" alt="Coca-Cola 600ml" class="product-img">
+                <div class="product-info">
+                    <span class="product-name">Coca-Cola 600ml</span>
+                    <div class="product-dots"></div>
+                    <span class="product-price">$30</span>
+                </div>
+            </div>
+        </div>
 
-        document.body.appendChild(div);
+        <div class="col-products">
+            <div class="product-item">
+                <img src="https://www.jugosdelvalle.com.mx/wp-content/uploads/2025/10/moras.webp" alt="Powerade Moras" class="product-img">
+                <div class="product-info">
+                    <span class="product-name">Powerade Moras</span>
+                    <div class="product-dots"></div>
+                    <span class="product-price">$40</span>
+                </div>
+            </div>
+            <div class="product-item">
+                <img src="https://cdn.alsuper.com/products/333861.png" alt="Agua Epura 1L/600ml" class="product-img">
+                <div class="product-info">
+                    <span class="product-name" style="font-size: 2rem;">Agua Epura 1L/600ml</span>
+                    <div class="product-dots"></div>
+                    <span class="product-price">$20 / $15</span>
+                </div>
+            </div>
+            <div class="product-item">
+                <img src="https://thumbs.dreamstime.com/b/batido-de-chocolate-en-vaso-pl%C3%A1stico-marr%C3%B3n-taza-quitada-aislada-fondo-blanco-183815960.jpg" alt="Chocomilk" class="product-img">
+                <div class="product-info">
+                    <span class="product-name">Chocomilk</span>
+                    <div class="product-dots"></div>
+                    <span class="product-price">$35</span>
+                </div>
+            </div>
+            <div class="product-item">
+                <img src="https://cdn.alsuper.com/products/465959.png" alt="Lechita Santa Clara" class="product-img">
+                <div class="product-info">
+                    <span class="product-name" style="font-size: 2.2rem;">Lechita Sta Clara</span>
+                    <div class="product-dots"></div>
+                    <span class="product-price">$15</span>
+                </div>
+            </div>
+        </div>
+    </div>
 
-        const canvas = await html2canvas(div,{scale:2});
+    <!-- ================== PANTALLA 4: ESPECIAL DEL DÍA ================== -->
+    <div class="screen screen-special">
+        <div class="special-banner">Especial del Día</div>
 
-        const imgData = canvas.toDataURL('image/png');
+        <!-- Mitad Izquierda -->
+        <div class="special-half special-left">
+            <img src="https://thumbs.dreamstime.com/b/batido-de-chocolate-en-vaso-pl%C3%A1stico-marr%C3%B3n-taza-quitada-aislada-fondo-blanco-183815960.jpg" alt="Chocomilk" class="special-img">
+            <h2 class="special-title">Chocomilk</h2>
+            <div class="special-price">$35</div>
+        </div>
 
-        pdf.addImage(imgData,'PNG',x,y,250,28);
+        <!-- Mitad Derecha -->
+        <div class="special-half">
+            <img src="https://golderie.com/wp-content/uploads/2022/01/12-Foam-B-8.png" alt="Salchipapas" class="special-img">
+            <h2 class="special-title">Salchipapas</h2>
+            <div class="special-price">$35</div>
+        </div>
+    </div>
 
-        document.body.removeChild(div);
-
-        y += 35;
-
-        contador++;
-
-        if(contador % 7 === 0){
-
-            pdf.addPage();
-
-            y = 10;
-
-        }
-
-    }
-
-    pdf.save('PROM26-GENERALES.pdf');
-
-}
-
-</script>
+</div>
 
 </body>
 </html>
