@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CAFETE 43 - Menú de la Calle del Infierno (Pantalla Completa)</title>
+    <title>CAFETE 43 - Menú El Cadáver de la Novia</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Montserrat:ital,wght@0,400;0,700;0,900;1,800&display=swap" rel="stylesheet">
+    <!-- Tipografía gótica/victoriana inspirada en Tim Burton (Henny Penny) + Montserrat -->
+    <link href="https://fonts.googleapis.com/css2?family=Henny+Penny&family=Montserrat:ital,wght@0,400;0,700;0,900;1,800&display=swap" rel="stylesheet">
     
     <style>
         * {
@@ -17,12 +18,12 @@
         }
 
         :root {
-            --bg-color: #000000;
-            --text-main: #e0e0e0;
-            --accent-blood: #990000;      
-            --accent-fire: #ff4500;       
-            --accent-blade: #b0c4de;      
-            --font-title: 'Creepster', cursive;
+            --bg-color: #050811;
+            --text-main: #e2eafc;          /* Blanco hueso / luz de luna */
+            --accent-bride: #4cc9f0;       /* Azul espectral de Emily */
+            --accent-glow: #b5179e;        /* Violeta / Magenta del Inframundo */
+            --accent-mist: #8d99ae;        /* Gris niebla */
+            --font-title: 'Henny Penny', cursive;
             --font-body: 'Montserrat', sans-serif;
         }
 
@@ -35,36 +36,37 @@
             width: 100vw;
             height: 100vh;
             background-color: var(--bg-color);
-            overflow: hidden; /* Evita cualquier barra de scroll */
+            overflow: hidden;
         }
 
-        /* CONTENEDOR PRINCIPAL FLUIDO */
+        /* CONTENEDOR PRINCIPAL FLUIDO - TEMÁTICA EL CADÁVER DE LA NOVIA */
         .menu-container {
             position: relative;
             width: 100vw;
             height: 100vh;
             
-            /* FONDO TEMÁTICO: PESADILLA EN LA CALLE DEL INFIERNO (Suéter de Freddy) */
+            /* Fondo de bosque nocturno victoriano con neblina azulada y rayas sutiles */
             background: 
-                radial-gradient(circle at center, rgba(0,0,0,0.4) 0%, rgba(20,0,0,0.9) 100%), 
+                radial-gradient(circle at 80% 20%, rgba(76, 201, 240, 0.18) 0%, transparent 45%),
+                radial-gradient(circle at center, rgba(15, 23, 42, 0.5) 0%, rgba(3, 5, 12, 0.95) 100%), 
                 repeating-linear-gradient(
-                    45deg,
-                    #6e1212, /* Rojo oscuro Freddy */
-                    #6e1212 40px,
-                    #2c3525 40px, /* Verde olivo Freddy */
-                    #2c3525 80px
+                    90deg,
+                    #080d1a,
+                    #080d1a 35px,
+                    #0d1527 35px,
+                    #0d1527 70px
                 );
             
             color: var(--text-main);
             font-family: var(--font-body);
-            box-shadow: inset 0 0 15rem rgba(153, 0, 0, 0.4);
+            box-shadow: inset 0 0 15rem rgba(76, 201, 240, 0.25);
         }
 
         /* =======================================================
            ANIMACIÓN DE 5 PANTALLAS (40 segundos en total)
            ======================================================= */
         .screen {
-            position: absolute; /* CLAVE para que todas se apilen en el mismo lugar */
+            position: absolute;
             top: 0;
             left: 0;
             width: 100%;
@@ -90,69 +92,77 @@
            ======================================================= */
         .screen-grid {
             display: grid;
-            grid-template-columns: 25% 1fr 1fr;
+            grid-template-columns: 27% 1fr 1fr; /* Columna izquierda ligeramente más ancha para los QRs grandes */
             height: 100%;
             width: 100%;
         }
 
         .col-left {
-            border-right: 0.2rem solid var(--accent-blood);
-            box-shadow: 0.5rem 0 2rem rgba(153, 0, 0, 0.2);
+            border-right: 0.2rem solid var(--accent-bride);
+            box-shadow: 0.5rem 0 2.5rem rgba(76, 201, 240, 0.2);
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            justify-content: space-between;
             align-items: center;
-            padding: 2vh 1vw;
+            padding: 1.5vh 1vw;
             text-align: center;
-            background: linear-gradient(to right, transparent, rgba(153,0,0,0.1));
+            background: linear-gradient(to right, rgba(5, 8, 17, 0.7), rgba(76, 201, 240, 0.08));
             height: 100%;
+        }
+
+        .header-left {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
         }
 
         .brand-logo {
             font-family: var(--font-title);
-            font-size: 3.5rem;
+            font-size: 3rem;
             font-weight: 400;
-            letter-spacing: 0.3rem;
-            margin-bottom: 0.2rem;
-            color: var(--accent-blood);
-            text-shadow: 0 0 1rem rgba(255, 0, 0, 0.5), 0.1rem 0.1rem 0 #000;
+            letter-spacing: 0.2rem;
+            color: var(--accent-bride);
+            text-shadow: 0 0 1.2rem rgba(76, 201, 240, 0.7), 0.15rem 0.15rem 0 #000;
         }
 
         .brand-location {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             letter-spacing: 0.3rem;
             text-transform: uppercase;
-            color: var(--accent-blade);
-            margin-bottom: 2vh;
+            color: var(--accent-mist);
+            margin-bottom: 0.5vh;
             font-weight: 800;
         }
 
         .screen-title {
             font-family: var(--font-title);
-            color: #ffcccc;
-            font-size: 6rem;
-            line-height: 0.8;
-            margin: 1vh 0;
-            text-shadow: 0.2rem 0.2rem 0 #660000, -0.1rem -0.1rem 0.5rem #ff0000;
-            transform: rotate(-3deg);
+            color: var(--text-main);
+            font-size: 4.2rem;
+            line-height: 1;
+            margin: 0.5vh 0;
+            text-shadow: 0.2rem 0.2rem 0 #050811, 0 0 1.5rem var(--accent-bride);
+            transform: rotate(-2deg);
         }
         
         .divider {
-            width: 4rem;
-            height: 0.4rem;
-            background-color: var(--accent-blood);
-            border-radius: 0.1rem;
-            margin: 2vh 0;
-            box-shadow: 0 0 0.5rem red;
-            transform: skew(-20deg); 
+            width: 5rem;
+            height: 0.25rem;
+            background: linear-gradient(90deg, transparent, var(--accent-bride), transparent);
+            margin: 0.5vh 0;
+            box-shadow: 0 0 0.8rem var(--accent-bride);
         }
 
+        /* =======================================================
+           CÓDIGOS QR AGRANDADOS
+           ======================================================= */
         .qrs-container {
             display: flex;
             flex-direction: column;
-            gap: 2vh; 
-            margin-top: 2vh;
+            justify-content: space-evenly;
+            gap: 1.2vh; 
             width: 100%;
+            flex-grow: 1;
             align-items: center;
         }
 
@@ -160,34 +170,39 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            background: rgba(20, 0, 0, 0.8);
-            padding: 1.5vh;
-            border-radius: 0.5rem;
-            border: 0.1rem solid var(--accent-blood);
-            box-shadow: inset 0 0 1rem rgba(153,0,0,0.5), 0 0 0.5rem rgba(0,0,0,0.8);
-            width: 90%; 
+            justify-content: center;
+            background: rgba(8, 13, 26, 0.9);
+            padding: 1vh 1vw;
+            border-radius: 0.8rem;
+            border: 0.15rem solid var(--accent-bride);
+            box-shadow: inset 0 0 1.2rem rgba(76, 201, 240, 0.35), 0 0 1rem rgba(0, 0, 0, 0.9);
+            width: 92%; 
         }
 
         .qr-text {
-            font-size: 1.2rem; 
+            font-size: 1.3rem; 
             font-weight: 800;
-            margin-bottom: 0.5vh;
-            color: var(--accent-blade);
+            margin-bottom: 0.6vh;
+            color: var(--text-main);
             text-transform: uppercase;
-            letter-spacing: 0.1rem;
-            text-shadow: 0.1rem 0.1rem 0 #000;
+            letter-spacing: 0.15rem;
+            text-shadow: 0 0 0.5rem var(--accent-bride), 0.1rem 0.1rem 0 #000;
         }
 
+        /* Tamaño aumentado de 15vh a 23.5vh para máxima visibilidad */
         .qr-image {
-            width: 15vh;  
-            height: 15vh; 
+            width: 23.5vh;  
+            height: 23.5vh; 
             background-color: #fff;
             object-fit: contain;
-            border-radius: 0.3rem;
+            border-radius: 0.5rem;
             padding: 0.4rem;
-            filter: drop-shadow(0 0 0.5rem rgba(255,0,0,0.3));
+            filter: drop-shadow(0 0 0.8rem rgba(76, 201, 240, 0.5));
         }
 
+        /* =======================================================
+           COLUMNAS DE PRODUCTOS
+           ======================================================= */
         .col-products {
             padding: 2vh 2vw; 
             display: flex;
@@ -200,23 +215,24 @@
             display: flex;
             align-items: center;
             width: 100%;
-            background: linear-gradient(90deg, rgba(20,0,0,0.6) 0%, transparent 100%);
+            background: linear-gradient(90deg, rgba(16, 26, 50, 0.75) 0%, transparent 100%);
             padding: 1vh 1vw;
             border-radius: 1rem;
-            border-left: 0.2rem solid transparent;
+            border-left: 0.25rem solid var(--accent-bride);
+            box-shadow: 0 0.3rem 1rem rgba(0, 0, 0, 0.4);
         }
 
         .product-img {
             width: 11vh; 
             height: 11vh; 
-            border-radius: 0.5rem; 
+            border-radius: 0.6rem; 
             object-fit: cover;
             flex-shrink: 0;
             margin-right: 1vw;
-            background-color: #0a0a0a;
-            border: 0.1rem solid #330000;
-            box-shadow: 0 0 1rem rgba(0,0,0,0.9), 0 0 0.5rem rgba(153,0,0,0.3);
-            filter: contrast(1.1) brightness(0.9);
+            background-color: #050811;
+            border: 0.12rem solid var(--accent-bride);
+            box-shadow: 0 0 1rem rgba(0,0,0,0.9), 0 0 0.8rem rgba(76, 201, 240, 0.3);
+            filter: contrast(1.05) saturate(0.85) hue-rotate(5deg);
         }
 
         .product-info {
@@ -228,17 +244,17 @@
 
         .product-name {
             font-family: var(--font-title);
-            color: #e6e6e6;
-            font-size: 2.2rem;
+            color: var(--text-main);
+            font-size: 2rem;
             line-height: 1.1;
             white-space: nowrap;
             letter-spacing: 0.05rem;
-            text-shadow: 0.1rem 0.1rem 0.3rem #000;
+            text-shadow: 0.1rem 0.1rem 0.3rem #000, 0 0 0.6rem rgba(76, 201, 240, 0.4);
         }
 
         .product-dots {
             flex-grow: 1;
-            border-bottom: 0.15rem dotted var(--accent-blood);
+            border-bottom: 0.15rem dotted var(--accent-bride);
             margin: 0 0.6rem;
             min-width: 1rem;
             position: relative;
@@ -247,13 +263,13 @@
         }
 
         .product-price {
-            font-size: 2.4rem;
+            font-size: 2.3rem;
             font-weight: 900;
-            color: var(--accent-fire);
+            color: var(--accent-bride);
             white-space: nowrap;
             flex-shrink: 0;
             font-family: var(--font-title);
-            text-shadow: 0 0 0.5rem rgba(255, 69, 0, 0.4), 0.1rem 0.1rem 0 #000;
+            text-shadow: 0 0 0.8rem rgba(181, 23, 158, 0.8), 0.1rem 0.1rem 0 #000;
         }
 
         /* Banners Superiores para Especiales */
@@ -262,16 +278,17 @@
             top: 3vh;
             left: 50%;
             transform: translateX(-50%);
-            background-color: var(--accent-blood);
-            color: #fff;
-            padding: 1.5vh 4vw;
-            font-size: 4rem; 
+            background: linear-gradient(135deg, #101935 0%, #1d1135 100%);
+            color: var(--text-main);
+            padding: 1.2vh 4vw;
+            font-size: 3.6rem; 
             font-family: var(--font-title);
             letter-spacing: 0.2rem;
-            border-radius: 0.5rem;
-            border: 0.2rem solid #400000;
-            box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.8), 0 0 1.5rem rgba(255, 0, 0, 0.6);
+            border-radius: 0.8rem;
+            border: 0.2rem solid var(--accent-bride);
+            box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.9), 0 0 1.8rem rgba(76, 201, 240, 0.6);
             z-index: 10;
+            white-space: nowrap;
         }
 
         /* Estructura para Pantallas Especiales */
@@ -279,7 +296,7 @@
             display: flex;
             width: 100%;
             height: 100%;
-            background: radial-gradient(circle at center, rgba(153,0,0,0.15) 0%, transparent 80%);
+            background: radial-gradient(circle at center, rgba(76, 201, 240, 0.15) 0%, transparent 80%);
         }
 
         .special-half {
@@ -289,32 +306,31 @@
             align-items: center;
             justify-content: center;
             position: relative;
-            padding: 4vh 2vw 0 2vw;
+            padding: 6vh 2vw 0 2vw;
             text-align: center;
         }
 
         .special-left {
-            border-right: 0.2rem dashed var(--accent-blood);
+            border-right: 0.2rem dashed var(--accent-bride);
         }
 
         .special-img {
             width: 35vh; 
             height: 35vh; 
-            border-radius: 1rem; 
+            border-radius: 50%; /* Marco estilo camafeo victoriano */
             object-fit: cover;
-            border: 0.2rem solid var(--accent-blood);
-            box-shadow: 0 1rem 2rem rgba(0,0,0,0.9), 0 0 2rem rgba(153,0,0,0.4);
+            border: 0.25rem solid var(--accent-bride);
+            box-shadow: 0 1rem 2rem rgba(0,0,0,0.9), 0 0 2.5rem rgba(76, 201, 240, 0.5);
             margin-bottom: 2vh;
-            background-color: #0a0a0a;
-            filter: contrast(1.1) brightness(0.9);
+            background-color: #050811;
         }
 
         .special-title {
             font-family: var(--font-title);
-            color: #e6e6e6;
-            font-size: 4.5rem; 
-            line-height: 1;
-            text-shadow: 0.2rem 0.2rem 0.5rem #000, 0 0 1rem var(--accent-blood);
+            color: var(--text-main);
+            font-size: 4.2rem; 
+            line-height: 1.1;
+            text-shadow: 0.2rem 0.2rem 0.5rem #000, 0 0 1.2rem var(--accent-bride);
             transform: rotate(-2deg);
             margin-bottom: 1vh;
             max-width: 95%; 
@@ -322,9 +338,9 @@
 
         .special-price {
             font-family: var(--font-title);
-            font-size: 6rem;
-            color: var(--accent-fire);
-            text-shadow: 0.2rem 0.2rem 0.5rem #000, 0 0 1.5rem rgba(255, 69, 0, 0.5);
+            font-size: 5.5rem;
+            color: var(--accent-bride);
+            text-shadow: 0.2rem 0.2rem 0.5rem #000, 0 0 1.8rem var(--accent-glow);
         }
 
         /* =======================================================
@@ -337,7 +353,7 @@
             align-items: center;
             width: 100%;
             height: 100%;
-            padding-top: 10vh; 
+            padding-top: 11vh; 
         }
 
         .movie-grid {
@@ -355,8 +371,9 @@
             align-items: center;
             justify-content: center;
             text-align: center;
-            background: radial-gradient(circle, rgba(153,0,0,0.3) 0%, transparent 60%);
-            border-radius: 1rem;
+            background: radial-gradient(circle, rgba(76, 201, 240, 0.2) 0%, rgba(181, 23, 158, 0.08) 50%, transparent 70%);
+            border: 0.1rem solid rgba(76, 201, 240, 0.3);
+            border-radius: 1.2rem;
             padding: 1vh; 
         }
 
@@ -365,26 +382,25 @@
             height: 16vh;
             border-radius: 1rem;
             object-fit: cover;
-            border: 0.2rem solid var(--accent-blood);
-            box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.9), 0 0 1rem rgba(153,0,0,0.4);
+            border: 0.2rem solid var(--accent-bride);
+            box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.9), 0 0 1.2rem rgba(76, 201, 240, 0.4);
             margin-bottom: 1vh;
-            background-color: #0a0a0a;
-            filter: contrast(1.2) brightness(0.7) sepia(0.3) hue-rotate(-10deg);
+            background-color: #050811;
+            filter: contrast(1.1) brightness(0.85) hue-rotate(15deg);
         }
 
         .movie-title {
             font-family: var(--font-title);
-            color: #e6e6e6;
-            font-size: 2.5rem; 
-            line-height: 1;
-            text-shadow: 0.1rem 0.1rem 0.3rem #000, 0 0 0.8rem var(--accent-blood);
+            color: var(--text-main);
+            font-size: 2.3rem; 
+            line-height: 1.1;
+            text-shadow: 0.1rem 0.1rem 0.3rem #000, 0 0 0.8rem var(--accent-bride);
             margin-bottom: 0.5vh;
-            text-transform: uppercase;
         }
 
         .movie-desc {
             font-family: var(--font-body);
-            color: var(--accent-blade);
+            color: var(--accent-mist);
             font-size: 1rem; 
             font-weight: 700;
             margin-bottom: 0.5vh;
@@ -395,9 +411,9 @@
 
         .movie-price {
             font-family: var(--font-title);
-            font-size: 3rem; 
-            color: var(--accent-fire);
-            text-shadow: 0.1rem 0.1rem 0.3rem #000, 0 0 1rem rgba(255, 69, 0, 0.5);
+            font-size: 2.8rem; 
+            color: var(--accent-bride);
+            text-shadow: 0.1rem 0.1rem 0.3rem #000, 0 0 1rem var(--accent-glow);
         }
 
     </style>
@@ -409,10 +425,12 @@
     <!-- ================== PANTALLA 1: COMIDA ================== -->
     <div class="screen screen-grid">
         <div class="col-left">
-            <div class="brand-logo">CAFETE 43</div>
-            <div class="brand-location">Las Choapas</div>
-            <div class="divider"></div>
-            <h1 class="screen-title">Comida</h1>
+            <div class="header-left">
+                <div class="brand-logo">CAFETE 43</div>
+                <div class="brand-location">Las Choapas</div>
+                <div class="divider"></div>
+                <h1 class="screen-title">Comida</h1>
+            </div>
             
             <div class="qrs-container">
                 <div class="qr-wrapper">
@@ -421,7 +439,7 @@
                 </div>
                 <div class="qr-wrapper">
                     <div class="qr-text">SPOTIFY</div>
-                    <img src="https://i.ibb.co/Ps0v45Lv/Dise-o-sin-t-tulo-5.png" alt="QR Pagar" class="qr-image">
+                    <img src="https://i.ibb.co/Ps0v45Lv/Dise-o-sin-t-tulo-5.png" alt="QR Spotify" class="qr-image">
                 </div>
             </div>
         </div>
@@ -446,7 +464,7 @@
             <div class="product-item">
                 <img src="https://images.unsplash.com/photo-1628840042765-356cda07504e?auto=format&fit=crop&w=500&q=80" alt="Empanadas Queso, Carne" class="product-img">
                 <div class="product-info">
-                    <span class="product-name" style="font-size: 2rem;">Empanadas Queso, Carne</span>
+                    <span class="product-name" style="font-size: 1.8rem;">Empanadas Queso, Carne</span>
                     <div class="product-dots"></div>
                     <span class="product-price">$10</span>
                 </div>
@@ -465,7 +483,7 @@
             <div class="product-item">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Coctel_de_camaron.jpg/500px-Coctel_de_camaron.jpg" alt="Aguachile-coctel de camaron" class="product-img">
                 <div class="product-info">
-                    <span class="product-name">Aguachile-coctel de camaron</span>
+                    <span class="product-name" style="font-size: 1.7rem;">Aguachile-coctel de camaron</span>
                     <div class="product-dots"></div>
                     <span class="product-price">$50</span>
                 </div>
@@ -507,7 +525,7 @@
                 <!-- ESPACIO 3: PROMO 2 HOT DOGS -->
                 <div class="movie-item">
                     <img src="https://images.unsplash.com/photo-1541214113241-21578d2d9b62?q=80&w=600&auto=format&fit=crop" alt="Promo Hot Dogs" class="movie-img">
-                    <h2 class="movie-title">Promo Sangrienta</h2>
+                    <h2 class="movie-title">Promo del Más Allá</h2>
                     <p class="movie-desc">¡Llévate 2 Hot Dogs por un precio especial!</p>
                     <div class="movie-price">$50</div>
                 </div>
@@ -515,7 +533,7 @@
                 <!-- ESPACIO 4: PALOMITAS -->
                 <div class="movie-item">
                     <img src="https://images.unsplash.com/photo-1585647347483-22b66260dfff?q=80&w=600&auto=format&fit=crop" alt="Palomitas Grandes" class="movie-img">
-                    <h2 class="movie-title">Palomitas Terror</h2>
+                    <h2 class="movie-title">Palomitas Nocturnas</h2>
                     <p class="movie-desc">Palomitas tamaño grande para tu película</p>
                     <div class="movie-price">$25</div>
                 </div>
@@ -527,10 +545,12 @@
     <!-- ================== PANTALLA 3: SNACKS ================== -->
     <div class="screen screen-grid">
         <div class="col-left">
-            <div class="brand-logo">CAFETE 43</div>
-            <div class="brand-location">Las Choapas</div>
-            <div class="divider"></div>
-            <h1 class="screen-title">Snacks</h1>
+            <div class="header-left">
+                <div class="brand-logo">CAFETE 43</div>
+                <div class="brand-location">Las Choapas</div>
+                <div class="divider"></div>
+                <h1 class="screen-title">Snacks</h1>
+            </div>
             
             <div class="qrs-container">
                 <div class="qr-wrapper">
@@ -539,7 +559,7 @@
                 </div>
                 <div class="qr-wrapper">
                     <div class="qr-text">SPOTIFY</div>
-                    <img src="https://i.ibb.co/Ps0v45Lv/Dise-o-sin-t-tulo-5.png" alt="QR Pagar" class="qr-image">
+                    <img src="https://i.ibb.co/Ps0v45Lv/Dise-o-sin-t-tulo-5.png" alt="QR Spotify" class="qr-image">
                 </div>
             </div>
         </div>
@@ -623,7 +643,7 @@
             <div class="product-item">
                 <img src="https://www.azucardulcerias.com/cdn/shop/files/840057e8e1fa8e01e1e8a1a9693baf0e.png?v=1782316521&width=1000" alt="Príncipe / Canelitas" class="product-img">
                 <div class="product-info">
-                    <span class="product-name" style="font-size: 1.8rem;">Príncipe / Canelitas</span>
+                    <span class="product-name" style="font-size: 1.7rem;">Príncipe / Canelitas</span>
                     <div class="product-dots"></div>
                     <span class="product-price">$10 <span style="font-size: 0.9rem;">c/u</span></span>
                 </div>
@@ -634,10 +654,12 @@
     <!-- ================== PANTALLA 4: BEBIDAS ================== -->
     <div class="screen screen-grid">
         <div class="col-left">
-            <div class="brand-logo">CAFETE 43</div>
-            <div class="brand-location">Las Choapas</div>
-            <div class="divider"></div>
-            <h1 class="screen-title">Bebidas</h1>
+            <div class="header-left">
+                <div class="brand-logo">CAFETE 43</div>
+                <div class="brand-location">Las Choapas</div>
+                <div class="divider"></div>
+                <h1 class="screen-title">Bebidas</h1>
+            </div>
             
             <div class="qrs-container">
                 <div class="qr-wrapper">
@@ -646,7 +668,7 @@
                 </div>
                 <div class="qr-wrapper">
                     <div class="qr-text">SPOTIFY</div>
-                    <img src="https://i.ibb.co/Ps0v45Lv/Dise-o-sin-t-tulo-5.png" alt="QR Pagar" class="qr-image">
+                    <img src="https://i.ibb.co/Ps0v45Lv/Dise-o-sin-t-tulo-5.png" alt="QR Spotify" class="qr-image">
                 </div>
             </div>
         </div>
@@ -706,7 +728,7 @@
             <div class="product-item">
                 <img src="https://cdn.alsuper.com/products/333861.png" alt="Agua Epura 1L/600ml" class="product-img">
                 <div class="product-info">
-                    <span class="product-name" style="font-size: 1.8rem;">Agua Epura 1L/600ml</span>
+                    <span class="product-name" style="font-size: 1.7rem;">Agua Epura 1L/600ml</span>
                     <div class="product-dots"></div>
                     <span class="product-price">$20 / $15</span>
                 </div>
@@ -722,7 +744,7 @@
             <div class="product-item">
                 <img src="https://cdn.alsuper.com/products/465959.png" alt="Lechita Santa Clara" class="product-img">
                 <div class="product-info">
-                    <span class="product-name" style="font-size: 2rem;">Lechita Sta Clara</span>
+                    <span class="product-name" style="font-size: 1.9rem;">Lechita Sta Clara</span>
                     <div class="product-dots"></div>
                     <span class="product-price">$15</span>
                 </div>
@@ -732,7 +754,7 @@
 
     <!-- ================== PANTALLA 5: ESPECIAL DEL DÍA ================== -->
     <div class="screen screen-special">
-        <div class="special-banner">Especial de Pesadilla</div>
+        <div class="special-banner">Especial del Inframundo</div>
 
         <!-- Mitad Izquierda -->
         <div class="special-half special-left">
@@ -744,7 +766,7 @@
         <!-- Mitad Derecha -->
         <div class="special-half">
             <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Coctel_de_camaron.jpg/500px-Coctel_de_camaron.jpg" alt="Coctel de Camaron" class="special-img">
-            <h2 class="special-title">coctel de camaron<br>Asada, Longaniza Pz</h2>
+            <h2 class="special-title">Coctel de Camarón</h2>
             <div class="special-price">$25</div>
         </div>
     </div>
