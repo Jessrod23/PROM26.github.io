@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CAFETE 43 - Menú El Cadáver de la Novia</title>
+    <title>CAFETE 43 - Menú Monster House</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <!-- Tipografía gótica/victoriana inspirada en Tim Burton (Henny Penny) + Montserrat -->
-    <link href="https://fonts.googleapis.com/css2?family=Henny+Penny&family=Montserrat:ital,wght@0,400;0,700;0,900;1,800&display=swap" rel="stylesheet">
+    <!-- Tipografía terrorífica / animada estilo Monster House (Creepster) + Montserrat -->
+    <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Montserrat:ital,wght@0,400;0,700;0,900;1,800&display=swap" rel="stylesheet">
     
     <style>
         * {
@@ -18,17 +18,18 @@
         }
 
         :root {
-            --bg-color: #050811;
-            --text-main: #e2eafc;          /* Blanco hueso / luz de luna */
-            --accent-bride: #4cc9f0;       /* Azul espectral de Emily */
-            --accent-glow: #b5179e;        /* Violeta / Magenta del Inframundo */
-            --accent-mist: #8d99ae;        /* Gris niebla */
-            --font-title: 'Henny Penny', cursive;
+            --bg-color: #060403;
+            --text-main: #fcf4e4;          /* Hueso pergamino / Luz de luna */
+            --accent-house: #ff6a00;       /* Naranja ojos de la casa viva */
+            --accent-fire: #d90429;        /* Fuego del sótano / chimenea */
+            --accent-lawn: #40916c;        /* Verde césped maldito de Nebbercracker */
+            --accent-wood: #22120b;        /* Madera vieja y quemada */
+            --accent-mist: #bdaaa0;        /* Niebla gris ceniza */
+            --font-title: 'Creepster', cursive;
             --font-body: 'Montserrat', sans-serif;
         }
 
         html {
-            /* Cálculo dinámico que equilibra ancho y alto para adaptarse a cualquier pantalla */
             font-size: calc(0.5vw + 0.6vh); 
         }
 
@@ -39,31 +40,62 @@
             overflow: hidden;
         }
 
-        /* CONTENEDOR PRINCIPAL FLUIDO - TEMÁTICA EL CADÁVER DE LA NOVIA */
+        /* CONTENEDOR PRINCIPAL - ESCENOGRAFÍA MONSTER HOUSE */
         .menu-container {
             position: relative;
             width: 100vw;
             height: 100vh;
+            overflow: hidden;
             
-            /* Fondo de bosque nocturno victoriano con neblina azulada y rayas sutiles */
+            /* Fondo compuesto: Atmósfera de noche tormentosa, ramas y textura de tablas de madera */
             background: 
-                radial-gradient(circle at 80% 20%, rgba(76, 201, 240, 0.18) 0%, transparent 45%),
-                radial-gradient(circle at center, rgba(15, 23, 42, 0.5) 0%, rgba(3, 5, 12, 0.95) 100%), 
+                radial-gradient(circle at 50% 12%, rgba(255, 106, 0, 0.22) 0%, transparent 45%),
+                radial-gradient(circle at 85% 85%, rgba(217, 4, 41, 0.18) 0%, transparent 50%),
+                radial-gradient(circle at center, rgba(16, 9, 6, 0.7) 0%, rgba(5, 3, 2, 0.96) 100%),
                 repeating-linear-gradient(
                     90deg,
-                    #080d1a,
-                    #080d1a 35px,
-                    #0d1527 35px,
-                    #0d1527 70px
-                );
+                    rgba(8, 4, 2, 0.94),
+                    rgba(8, 4, 2, 0.94) 40px,
+                    rgba(18, 9, 5, 0.9) 40px,
+                    rgba(18, 9, 5, 0.9) 80px
+                ),
+                url('https://images.unsplash.com/photo-1509114397022-ed747cca3f65?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat;
             
             color: var(--text-main);
             font-family: var(--font-body);
-            box-shadow: inset 0 0 15rem rgba(76, 201, 240, 0.25);
+            box-shadow: inset 0 0 14rem #000, inset 0 0 5rem rgba(255, 106, 0, 0.35);
+        }
+
+        /* Silueta de los Ojos de la Casa en la parte superior */
+        .house-eyes-backdrop {
+            position: absolute;
+            top: 2%;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 14vw;
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0.65;
+        }
+
+        .house-eye {
+            width: 7vw;
+            height: 4.5vh;
+            background: radial-gradient(ellipse at center, #fff176 10%, #ff6a00 60%, transparent 95%);
+            box-shadow: 0 0 3rem #ff6a00, 0 0 1.5rem #d90429;
+            border-radius: 50% 50% 20% 20%;
+            filter: blur(1.5px);
+            animation: houseBreathing 4s ease-in-out infinite alternate;
+        }
+
+        @keyframes houseBreathing {
+            0% { transform: scale(0.95); opacity: 0.45; filter: blur(2px); }
+            100% { transform: scale(1.1); opacity: 0.85; filter: blur(0.5px); box-shadow: 0 0 4.5rem #ff6a00, 0 0 2.5rem #d90429; }
         }
 
         /* =======================================================
-           ANIMACIÓN DE 5 PANTALLAS (40 segundos en total)
+            ANIMACIÓN DE 5 PANTALLAS (40 segundos en total)
            ======================================================= */
         .screen {
             position: absolute;
@@ -73,41 +105,43 @@
             height: 100%;
             opacity: 0; 
             animation: crossfadePerfecto 40s infinite;
+            z-index: 2;
         }
 
-        .screen:nth-child(1) { animation-delay: -40s; } /* Comida */
-        .screen:nth-child(2) { animation-delay: -32s; } /* Viernes de Película */
-        .screen:nth-child(3) { animation-delay: -24s; } /* Snacks */
-        .screen:nth-child(4) { animation-delay: -16s; } /* Bebidas */
-        .screen:nth-child(5) { animation-delay: -8s; }  /* Especial */
+        .screen:nth-child(2) { animation-delay: -40s; } /* Comida */
+        .screen:nth-child(3) { animation-delay: -32s; } /* Viernes de Película */
+        .screen:nth-child(4) { animation-delay: -24s; } /* Snacks */
+        .screen:nth-child(5) { animation-delay: -16s; } /* Bebidas */
+        .screen:nth-child(6) { animation-delay: -8s; }  /* Especial */
 
         @keyframes crossfadePerfecto {
-            0%, 16%  { opacity: 1; z-index: 2; }
-            20%, 96% { opacity: 0; z-index: 1; }
-            100%     { opacity: 1; z-index: 2; }
+            0%, 16%  { opacity: 1; z-index: 5; }
+            20%, 96% { opacity: 0; z-index: 2; }
+            100%     { opacity: 1; z-index: 5; }
         }
 
         /* =======================================================
-           ESTILOS GENERALES DEL MENÚ ADAPTABLES
+            ESTILOS GENERALES DEL MENÚ ADAPTABLES
            ======================================================= */
         .screen-grid {
             display: grid;
-            grid-template-columns: 27% 1fr 1fr; /* Columna izquierda ligeramente más ancha para los QRs grandes */
+            grid-template-columns: 27% 1fr 1fr;
             height: 100%;
             width: 100%;
         }
 
         .col-left {
-            border-right: 0.2rem solid var(--accent-bride);
-            box-shadow: 0.5rem 0 2.5rem rgba(76, 201, 240, 0.2);
+            border-right: 0.3rem solid var(--accent-house);
+            box-shadow: 0.8rem 0 3rem rgba(255, 106, 0, 0.35);
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             align-items: center;
-            padding: 1.5vh 1vw;
+            padding: 1.5vh 1.2vw;
             text-align: center;
-            background: linear-gradient(to right, rgba(5, 8, 17, 0.7), rgba(76, 201, 240, 0.08));
+            background: linear-gradient(to right, rgba(14, 8, 4, 0.95), rgba(35, 16, 7, 0.85));
             height: 100%;
+            position: relative;
         }
 
         .header-left {
@@ -119,42 +153,43 @@
 
         .brand-logo {
             font-family: var(--font-title);
-            font-size: 3rem;
+            font-size: 3.6rem;
             font-weight: 400;
-            letter-spacing: 0.2rem;
-            color: var(--accent-bride);
-            text-shadow: 0 0 1.2rem rgba(76, 201, 240, 0.7), 0.15rem 0.15rem 0 #000;
+            letter-spacing: 0.25rem;
+            color: var(--accent-house);
+            text-shadow: 0 0 1.8rem rgba(255, 106, 0, 0.85), 0.25rem 0.25rem 0 #000;
         }
 
         .brand-location {
             font-size: 0.85rem;
-            letter-spacing: 0.3rem;
+            letter-spacing: 0.35rem;
             text-transform: uppercase;
             color: var(--accent-mist);
             margin-bottom: 0.5vh;
             font-weight: 800;
+            text-shadow: 0.1rem 0.1rem 0.2rem #000;
         }
 
         .screen-title {
             font-family: var(--font-title);
-            color: var(--text-main);
-            font-size: 4.2rem;
+            color: #ffe6a7;
+            font-size: 4.8rem;
             line-height: 1;
             margin: 0.5vh 0;
-            text-shadow: 0.2rem 0.2rem 0 #050811, 0 0 1.5rem var(--accent-bride);
-            transform: rotate(-2deg);
+            text-shadow: 0.25rem 0.25rem 0 #000, 0 0 2rem var(--accent-house), 0 0 3rem var(--accent-fire);
+            transform: rotate(-3deg);
         }
         
         .divider {
-            width: 5rem;
-            height: 0.25rem;
-            background: linear-gradient(90deg, transparent, var(--accent-bride), transparent);
+            width: 6rem;
+            height: 0.28rem;
+            background: linear-gradient(90deg, transparent, var(--accent-house), var(--accent-fire), transparent);
             margin: 0.5vh 0;
-            box-shadow: 0 0 0.8rem var(--accent-bride);
+            box-shadow: 0 0 1.2rem var(--accent-house);
         }
 
         /* =======================================================
-           CÓDIGOS QR AGRANDADOS
+            CÓDIGOS QR
            ======================================================= */
         .qrs-container {
             display: flex;
@@ -171,11 +206,11 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            background: rgba(8, 13, 26, 0.9);
+            background: rgba(22, 11, 6, 0.95);
             padding: 1vh 1vw;
-            border-radius: 0.8rem;
-            border: 0.15rem solid var(--accent-bride);
-            box-shadow: inset 0 0 1.2rem rgba(76, 201, 240, 0.35), 0 0 1rem rgba(0, 0, 0, 0.9);
+            border-radius: 0.9rem;
+            border: 0.18rem solid var(--accent-house);
+            box-shadow: inset 0 0 1.5rem rgba(255, 106, 0, 0.3), 0 0 1.5rem rgba(0, 0, 0, 0.95);
             width: 92%; 
         }
 
@@ -186,10 +221,9 @@
             color: var(--text-main);
             text-transform: uppercase;
             letter-spacing: 0.15rem;
-            text-shadow: 0 0 0.5rem var(--accent-bride), 0.1rem 0.1rem 0 #000;
+            text-shadow: 0 0 0.8rem var(--accent-house), 0.1rem 0.1rem 0 #000;
         }
 
-        /* Tamaño aumentado de 15vh a 23.5vh para máxima visibilidad */
         .qr-image {
             width: 23.5vh;  
             height: 23.5vh; 
@@ -197,11 +231,11 @@
             object-fit: contain;
             border-radius: 0.5rem;
             padding: 0.4rem;
-            filter: drop-shadow(0 0 0.8rem rgba(76, 201, 240, 0.5));
+            filter: drop-shadow(0 0 1rem rgba(255, 106, 0, 0.6));
         }
 
         /* =======================================================
-           COLUMNAS DE PRODUCTOS
+            COLUMNAS DE PRODUCTOS CON TABLAS DE MADERA
            ======================================================= */
         .col-products {
             padding: 2vh 2vw; 
@@ -215,11 +249,15 @@
             display: flex;
             align-items: center;
             width: 100%;
-            background: linear-gradient(90deg, rgba(16, 26, 50, 0.75) 0%, transparent 100%);
-            padding: 1vh 1vw;
-            border-radius: 1rem;
-            border-left: 0.25rem solid var(--accent-bride);
-            box-shadow: 0 0.3rem 1rem rgba(0, 0, 0, 0.4);
+            /* Efecto tablón de porche embrujado con relieve */
+            background: linear-gradient(90deg, rgba(38, 19, 10, 0.92) 0%, rgba(22, 11, 6, 0.78) 100%);
+            padding: 0.9vh 1.2vw;
+            border-radius: 0.8rem;
+            border-left: 0.35rem solid var(--accent-house);
+            border-top: 0.08rem solid rgba(255, 106, 0, 0.25);
+            border-bottom: 0.15rem solid #000;
+            box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(5px);
         }
 
         .product-img {
@@ -228,11 +266,11 @@
             border-radius: 0.6rem; 
             object-fit: cover;
             flex-shrink: 0;
-            margin-right: 1vw;
-            background-color: #050811;
-            border: 0.12rem solid var(--accent-bride);
-            box-shadow: 0 0 1rem rgba(0,0,0,0.9), 0 0 0.8rem rgba(76, 201, 240, 0.3);
-            filter: contrast(1.05) saturate(0.85) hue-rotate(5deg);
+            margin-right: 1.1vw;
+            background-color: #0c0603;
+            border: 0.15rem solid var(--accent-house);
+            box-shadow: 0 0 1.2rem rgba(0,0,0,0.95), 0 0 0.9rem rgba(255, 106, 0, 0.4);
+            filter: contrast(1.1) saturate(1.05);
         }
 
         .product-info {
@@ -245,48 +283,48 @@
         .product-name {
             font-family: var(--font-title);
             color: var(--text-main);
-            font-size: 2rem;
+            font-size: 2.2rem;
             line-height: 1.1;
             white-space: nowrap;
             letter-spacing: 0.05rem;
-            text-shadow: 0.1rem 0.1rem 0.3rem #000, 0 0 0.6rem rgba(76, 201, 240, 0.4);
+            text-shadow: 0.15rem 0.15rem 0.3rem #000, 0 0 0.8rem rgba(255, 106, 0, 0.45);
         }
 
         .product-dots {
             flex-grow: 1;
-            border-bottom: 0.15rem dotted var(--accent-bride);
+            border-bottom: 0.2rem dotted var(--accent-house);
             margin: 0 0.6rem;
             min-width: 1rem;
             position: relative;
             top: -0.25rem;
-            opacity: 0.6;
+            opacity: 0.7;
         }
 
         .product-price {
-            font-size: 2.3rem;
+            font-size: 2.6rem;
             font-weight: 900;
-            color: var(--accent-bride);
+            color: var(--accent-house);
             white-space: nowrap;
             flex-shrink: 0;
             font-family: var(--font-title);
-            text-shadow: 0 0 0.8rem rgba(181, 23, 158, 0.8), 0.1rem 0.1rem 0 #000;
+            text-shadow: 0 0 1.2rem rgba(217, 4, 41, 0.9), 0.12rem 0.12rem 0 #000;
         }
 
         /* Banners Superiores para Especiales */
         .special-banner {
             position: absolute;
-            top: 3vh;
+            top: 2.8vh;
             left: 50%;
             transform: translateX(-50%);
-            background: linear-gradient(135deg, #101935 0%, #1d1135 100%);
-            color: var(--text-main);
-            padding: 1.2vh 4vw;
-            font-size: 3.6rem; 
+            background: linear-gradient(135deg, #301306 0%, #150802 100%);
+            color: #ffe6a7;
+            padding: 1.2vh 4.5vw;
+            font-size: 3.8rem; 
             font-family: var(--font-title);
             letter-spacing: 0.2rem;
             border-radius: 0.8rem;
-            border: 0.2rem solid var(--accent-bride);
-            box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.9), 0 0 1.8rem rgba(76, 201, 240, 0.6);
+            border: 0.25rem solid var(--accent-house);
+            box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.95), 0 0 2.2rem rgba(255, 106, 0, 0.8);
             z-index: 10;
             white-space: nowrap;
         }
@@ -296,7 +334,7 @@
             display: flex;
             width: 100%;
             height: 100%;
-            background: radial-gradient(circle at center, rgba(76, 201, 240, 0.15) 0%, transparent 80%);
+            background: radial-gradient(circle at center, rgba(255, 106, 0, 0.16) 0%, transparent 80%);
         }
 
         .special-half {
@@ -311,26 +349,26 @@
         }
 
         .special-left {
-            border-right: 0.2rem dashed var(--accent-bride);
+            border-right: 0.22rem dashed var(--accent-house);
         }
 
         .special-img {
             width: 35vh; 
             height: 35vh; 
-            border-radius: 50%; /* Marco estilo camafeo victoriano */
+            border-radius: 50%;
             object-fit: cover;
-            border: 0.25rem solid var(--accent-bride);
-            box-shadow: 0 1rem 2rem rgba(0,0,0,0.9), 0 0 2.5rem rgba(76, 201, 240, 0.5);
+            border: 0.35rem solid var(--accent-house);
+            box-shadow: 0 1rem 3rem rgba(0,0,0,0.95), 0 0 3.5rem rgba(255, 106, 0, 0.7);
             margin-bottom: 2vh;
-            background-color: #050811;
+            background-color: #0c0603;
         }
 
         .special-title {
             font-family: var(--font-title);
             color: var(--text-main);
-            font-size: 4.2rem; 
+            font-size: 4.6rem; 
             line-height: 1.1;
-            text-shadow: 0.2rem 0.2rem 0.5rem #000, 0 0 1.2rem var(--accent-bride);
+            text-shadow: 0.25rem 0.25rem 0.5rem #000, 0 0 1.6rem var(--accent-house);
             transform: rotate(-2deg);
             margin-bottom: 1vh;
             max-width: 95%; 
@@ -338,13 +376,13 @@
 
         .special-price {
             font-family: var(--font-title);
-            font-size: 5.5rem;
-            color: var(--accent-bride);
-            text-shadow: 0.2rem 0.2rem 0.5rem #000, 0 0 1.8rem var(--accent-glow);
+            font-size: 5.8rem;
+            color: var(--accent-house);
+            text-shadow: 0.25rem 0.25rem 0.5rem #000, 0 0 2.2rem var(--accent-fire);
         }
 
         /* =======================================================
-           ESTILOS VIERNES DE PELÍCULA
+            ESTILOS VIERNES DE PELÍCULA
            ======================================================= */
         .movie-layout {
             display: flex;
@@ -371,10 +409,11 @@
             align-items: center;
             justify-content: center;
             text-align: center;
-            background: radial-gradient(circle, rgba(76, 201, 240, 0.2) 0%, rgba(181, 23, 158, 0.08) 50%, transparent 70%);
-            border: 0.1rem solid rgba(76, 201, 240, 0.3);
+            background: radial-gradient(circle, rgba(255, 106, 0, 0.25) 0%, rgba(35, 17, 8, 0.85) 60%, transparent 85%);
+            border: 0.15rem solid rgba(255, 106, 0, 0.4);
             border-radius: 1.2rem;
             padding: 1vh; 
+            box-shadow: 0 0.8rem 2rem rgba(0, 0, 0, 0.8);
         }
 
         .movie-img {
@@ -382,19 +421,19 @@
             height: 16vh;
             border-radius: 1rem;
             object-fit: cover;
-            border: 0.2rem solid var(--accent-bride);
-            box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.9), 0 0 1.2rem rgba(76, 201, 240, 0.4);
+            border: 0.22rem solid var(--accent-house);
+            box-shadow: 0 0.5rem 1.2rem rgba(0,0,0,0.9), 0 0 1.4rem rgba(255, 106, 0, 0.5);
             margin-bottom: 1vh;
-            background-color: #050811;
-            filter: contrast(1.1) brightness(0.85) hue-rotate(15deg);
+            background-color: #0c0603;
+            filter: contrast(1.1) brightness(0.92);
         }
 
         .movie-title {
             font-family: var(--font-title);
             color: var(--text-main);
-            font-size: 2.3rem; 
+            font-size: 2.6rem; 
             line-height: 1.1;
-            text-shadow: 0.1rem 0.1rem 0.3rem #000, 0 0 0.8rem var(--accent-bride);
+            text-shadow: 0.15rem 0.15rem 0.3rem #000, 0 0 1rem var(--accent-house);
             margin-bottom: 0.5vh;
         }
 
@@ -411,9 +450,9 @@
 
         .movie-price {
             font-family: var(--font-title);
-            font-size: 2.8rem; 
-            color: var(--accent-bride);
-            text-shadow: 0.1rem 0.1rem 0.3rem #000, 0 0 1rem var(--accent-glow);
+            font-size: 3.2rem; 
+            color: var(--accent-house);
+            text-shadow: 0.15rem 0.15rem 0.3rem #000, 0 0 1.4rem var(--accent-fire);
         }
 
     </style>
@@ -422,7 +461,13 @@
 
 <div class="menu-container">
 
-    <!-- ================== PANTALLA 1: COMIDA ================== -->
+    <!-- Efecto ambiental: Ventanas/Ojos ardientes de Monster House -->
+    <div class="house-eyes-backdrop">
+        <div class="house-eye"></div>
+        <div class="house-eye"></div>
+    </div>
+
+    <!-- ================== PANTALLA 1: COMIDA (MONSTER HOUSE) ================== -->
     <div class="screen screen-grid">
         <div class="col-left">
             <div class="header-left">
@@ -444,56 +489,66 @@
             </div>
         </div>
 
+        <!-- Columna de Productos 1 -->
         <div class="col-products">
             <div class="product-item">
-                <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=500&q=80" alt="Hamburguesa" class="product-img">
+                <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=500&q=80" alt="Hamburguesas" class="product-img">
                 <div class="product-info">
-                    <span class="product-name" style="font-size: 1.8rem;">Hamburguesa</span>
+                    <span class="product-name">Hamburguesas</span>
                     <div class="product-dots"></div>
                     <span class="product-price">$60</span>
                 </div>
             </div>
             <div class="product-item">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Torta_de_cochinita_pibil.jpg/500px-Torta_de_cochinita_pibil.jpg" alt="Torta de cochinita" class="product-img">
+                <img src="https://images.unsplash.com/photo-1619740455993-9e612b1af08a?auto=format&fit=crop&w=500&q=80" alt="Hot dogs" class="product-img">
                 <div class="product-info">
-                    <span class="product-name">Torta de cochinita</span>
+                    <span class="product-name">Hot dogs</span>
                     <div class="product-dots"></div>
                     <span class="product-price">$30</span>
                 </div>
             </div>
             <div class="product-item">
-                <img src="https://images.unsplash.com/photo-1628840042765-356cda07504e?auto=format&fit=crop&w=500&q=80" alt="Empanadas Queso, Carne" class="product-img">
+                <img src="https://images.unsplash.com/photo-1513456852971-30c0b8199d4d?auto=format&fit=crop&w=500&q=80" alt="Nachos" class="product-img">
                 <div class="product-info">
-                    <span class="product-name" style="font-size: 1.8rem;">Empanadas Queso, Carne</span>
+                    <span class="product-name">Nachos</span>
                     <div class="product-dots"></div>
-                    <span class="product-price">$10</span>
+                    <span class="product-price">$40</span>
+                </div>
+            </div>
+            <div class="product-item">
+                <img src="https://images.unsplash.com/photo-1585109649139-366815a0d713?auto=format&fit=crop&w=500&q=80" alt="Salchipapas" class="product-img">
+                <div class="product-info">
+                    <span class="product-name">Salchipapas</span>
+                    <div class="product-dots"></div>
+                    <span class="product-price">$35</span>
                 </div>
             </div>
         </div>
 
+        <!-- Columna de Productos 2 -->
         <div class="col-products">
             <div class="product-item">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/00/Gringa.jpg/500px-Gringa.jpg" alt="Gringas Pastor-Asada" class="product-img">
+                <img src="https://images.unsplash.com/photo-1627042633706-0498eb182390?auto=format&fit=crop&w=500&q=80" alt="Banderillas" class="product-img">
                 <div class="product-info">
-                    <span class="product-name">Gringas Pastor-Asada</span>
-                    <div class="product-dots"></div>
-                    <span class="product-price">$25</span>
-                </div>
-            </div>
-            <div class="product-item">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Coctel_de_camaron.jpg/500px-Coctel_de_camaron.jpg" alt="Aguachile-coctel de camaron" class="product-img">
-                <div class="product-info">
-                    <span class="product-name" style="font-size: 1.7rem;">Aguachile-coctel de camaron</span>
-                    <div class="product-dots"></div>
-                    <span class="product-price">$50</span>
-                </div>
-            </div>
-            <div class="product-item">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Torta_de_Jam%C3%B3n.jpg/500px-Torta_de_Jam%C3%B3n.jpg" alt="Torta de jamon" class="product-img">
-                <div class="product-info">
-                    <span class="product-name">Torta de jamon </span>
+                    <span class="product-name">Banderillas</span>
                     <div class="product-dots"></div>
                     <span class="product-price">$20</span>
+                </div>
+            </div>
+            <div class="product-item">
+                <img src="https://images.unsplash.com/photo-1628840042765-356cda07504e?auto=format&fit=crop&w=500&q=80" alt="Empanadas Carne o Queso" class="product-img">
+                <div class="product-info">
+                    <span class="product-name" style="font-size: 1.85rem;">Empanadas Carne/Queso</span>
+                    <div class="product-dots"></div>
+                    <span class="product-price">$10</span>
+                </div>
+            </div>
+            <div class="product-item">
+                <img src="https://images.unsplash.com/photo-1565299585323-38d6b0865b47?auto=format&fit=crop&w=500&q=80" alt="Picadas Verdes o Rojas" class="product-img">
+                <div class="product-info">
+                    <span class="product-name" style="font-size: 1.85rem;">Picadas Verdes/Rojas</span>
+                    <div class="product-dots"></div>
+                    <span class="product-price">$15</span>
                 </div>
             </div>
         </div>
@@ -752,22 +807,22 @@
         </div>
     </div>
 
-    <!-- ================== PANTALLA 5: ESPECIAL DEL DÍA ================== -->
+    <!-- ================== PANTALLA 5: ESPECIAL DEL DÍA (HOT DOG Y SALCHIPAPAS) ================== -->
     <div class="screen screen-special">
-        <div class="special-banner">Especial del Inframundo</div>
+        <div class="special-banner">Especial de Monster House</div>
 
-        <!-- Mitad Izquierda -->
+        <!-- Mitad Izquierda: Hot Dog -->
         <div class="special-half special-left">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Aguachile_en_plato.jpg/500px-Aguachile_en_plato.jpg" alt="Aguachile" class="special-img">
-            <h2 class="special-title">Aguachile</h2>
-            <div class="special-price">$50</div>
+            <img src="https://images.unsplash.com/photo-1619740455993-9e612b1af08a?auto=format&fit=crop&w=600&q=80" alt="Hot Dog" class="special-img">
+            <h2 class="special-title">Hot Dog</h2>
+            <div class="special-price">$30</div>
         </div>
 
-        <!-- Mitad Derecha -->
+        <!-- Mitad Derecha: Salchipapas -->
         <div class="special-half">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Coctel_de_camaron.jpg/500px-Coctel_de_camaron.jpg" alt="Coctel de Camaron" class="special-img">
-            <h2 class="special-title">Coctel de Camarón</h2>
-            <div class="special-price">$25</div>
+            <img src="https://images.unsplash.com/photo-1585109649139-366815a0d713?auto=format&fit=crop&w=600&q=80" alt="Salchipapas" class="special-img">
+            <h2 class="special-title">Salchipapas</h2>
+            <div class="special-price">$35</div>
         </div>
     </div>
 
